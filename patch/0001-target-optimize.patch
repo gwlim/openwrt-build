@@ -1,0 +1,65 @@
+diff --git a/include/target.mk b/include/target.mk
+index d13902a..265494e 100644
+--- a/include/target.mk
++++ b/include/target.mk
+@@ -18,8 +18,11 @@ DEFAULT_PACKAGES:=\
+ 	fstools \
+ 	libc \
+ 	libgcc \
+-	libustream-mbedtls \
++	libustream-openssl \
+ 	logd \
++	luci \
++	luci-mod-admin-full \
++	luci-theme-bootstrap \
+ 	mtd \
+ 	netifd \
+ 	uci \
+@@ -233,7 +236,7 @@ LINUX_RECONF_DIFF = $(SCRIPT_DIR)/kconfig.pl - '>' $(call __linux_confcmd,$(filt
+ ifeq ($(DUMP),1)
+   BuildTarget=$(BuildTargets/DumpCurrent)
+ 
+-  CPU_CFLAGS = -Os -pipe
++  CPU_CFLAGS = -O2 -pipe
+   ifneq ($(findstring mips,$(ARCH)),)
+     ifneq ($(findstring mips64,$(ARCH)),)
+       CPU_TYPE ?= mips64
+diff --git a/config/Config-devel.in b/config/Config-devel.in
+index cbac91c..7506bf7 100644
+--- a/config/Config-devel.in
++++ b/config/Config-devel.in
+@@ -153,7 +153,7 @@ menuconfig DEVEL
+ 
+ 	config EXTRA_OPTIMIZATION
+ 		string "Additional compiler options" if DEVEL
+-		default "-fno-caller-saves -fno-plt" if !CONFIG_EXTERNAL_TOOLCHAIN && !arc
++		default "-fno-caller-saves -fno-plt -fomit-frame-pointer" if !CONFIG_EXTERNAL_TOOLCHAIN && !arc
+ 		default "-fno-caller-saves"
+ 		help
+ 		  Extra target-independent optimizations to use when building for the target.
+diff --git a/config/Config-build.in b/config/Config-build.in
+index 41c1dac..71b61b0 100644
+--- a/config/Config-build.in
++++ b/config/Config-build.in
+@@ -41,11 +41,13 @@ menu "Global build settings"
+ 
+ 	config ALL_KMODS
+ 		bool "Select all kernel module packages by default"
++		default y
+ 
+ 	config ALL
+ 		bool "Select all userspace packages by default"
+ 		select ALL_KMODS
+ 		select ALL_NONSHARED
++		default n
+ 
+ 	config BUILDBOT
+ 		bool "Set build defaults for automatic builds (e.g. via buildbot)"
+@@ -168,6 +170,7 @@ menu "Global build settings"
+ 	config USE_LTO
+ 		bool
+ 		prompt "Use the link-time optimizer for all packages (EXPERIMENTAL)"
++		default y
+ 		help
+ 		  Adds LTO flags to the CFLAGS and LDFLAGS.
+ 		  Packages can choose to opt-out via setting PKG_BUILD_FLAGS:=no-lto

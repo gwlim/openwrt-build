@@ -1,0 +1,40 @@
+diff --git a/config/Config-kernel.in b/config/Config-kernel.in
+index 4bd2cde..f898dec 100644
+--- a/config/Config-kernel.in
++++ b/config/Config-kernel.in
+@@ -335,7 +335,7 @@ endif
+ 
+ config KERNEL_KALLSYMS
+ 	bool "Compile the kernel with symbol table information"
+-	default y if !SMALL_FLASH
++	default n
+ 	help
+ 	  This will give you more information in stack traces from kernel oopses.
+ 
+@@ -419,7 +419,7 @@ config KERNEL_DEBUG_KERNEL
+ 
+ config KERNEL_DEBUG_INFO
+ 	bool "Compile the kernel with debug information"
+-	default y if !SMALL_FLASH
++	default n
+ 	select KERNEL_DEBUG_KERNEL
+ 	help
+ 	  This will compile your kernel and modules with debug information.
+@@ -616,7 +616,7 @@ config KERNEL_COREDUMP
+ config KERNEL_ELF_CORE
+ 	bool "Enable process core dump support"
+ 	select KERNEL_COREDUMP
+-	default y if !SMALL_FLASH
++	default n
+ 
+ config KERNEL_PROVE_LOCKING
+ 	bool "Enable kernel lock checking"
+@@ -1356,7 +1356,7 @@ config KERNEL_SQUASHFS_XATTR
+ #
+ choice
+ 	prompt "Compiler optimization level"
+-	default KERNEL_CC_OPTIMIZE_FOR_SIZE if SMALL_FLASH
++	default KERNEL_CC_OPTIMIZE_FOR_PERFORMANCE
+ 
+ config KERNEL_CC_OPTIMIZE_FOR_PERFORMANCE
+ 	bool "Optimize for performance"
