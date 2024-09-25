@@ -1,0 +1,4635 @@
+diff --git a/package/kernel/linux/modules/block.mk b/package/kernel/linux/modules/block.mk
+index 3dbeca9..0cbf882 100644
+--- a/package/kernel/linux/modules/block.mk
++++ b/package/kernel/linux/modules/block.mk
+@@ -7,21 +7,6 @@
+ 
+ BLOCK_MENU:=Block Devices
+ 
+-define KernelPackage/aoe
+-  SUBMENU:=$(BLOCK_MENU)
+-  TITLE:=ATA over Ethernet support
+-  KCONFIG:=CONFIG_ATA_OVER_ETH
+-  FILES:=$(LINUX_DIR)/drivers/block/aoe/aoe.ko
+-  AUTOLOAD:=$(call AutoLoad,30,aoe)
+-endef
+-
+-define KernelPackage/aoe/description
+- Kernel support for ATA over Ethernet
+-endef
+-
+-$(eval $(call KernelPackage,aoe))
+-
+-
+ define KernelPackage/ata-core
+   SUBMENU:=$(BLOCK_MENU)
+   TITLE:=Serial and Parallel ATA support
+@@ -75,20 +60,6 @@ endef
+ $(eval $(call KernelPackage,ata-ahci-platform))
+ 
+ 
+-define KernelPackage/ata-artop
+-  TITLE:=ARTOP 6210/6260 PATA support
+-  KCONFIG:=CONFIG_PATA_ARTOP
+-  FILES:=$(LINUX_DIR)/drivers/ata/pata_artop.ko
+-  AUTOLOAD:=$(call AutoLoad,41,pata_artop,1)
+-  $(call AddDepends/ata)
+-endef
+-
+-define KernelPackage/ata-artop/description
+- PATA support for ARTOP 6210/6260 host controllers
+-endef
+-
+-$(eval $(call KernelPackage,ata-artop))
+-
+ define KernelPackage/ata-ahci-dwc
+   TITLE:=Synopsys DWC AHCI SATA
+   KCONFIG:= \
+@@ -102,95 +73,6 @@ endef
+ 
+ $(eval $(call KernelPackage,ata-ahci-dwc))
+ 
+-define KernelPackage/ata-nvidia-sata
+-  TITLE:=Nvidia Serial ATA support
+-  KCONFIG:=CONFIG_SATA_NV
+-  FILES:=$(LINUX_DIR)/drivers/ata/sata_nv.ko
+-  AUTOLOAD:=$(call AutoLoad,41,sata_nv,1)
+-  $(call AddDepends/ata)
+-endef
+-
+-$(eval $(call KernelPackage,ata-nvidia-sata))
+-
+-
+-define KernelPackage/ata-pdc202xx-old
+-  TITLE:=Older Promise PATA controller support
+-  KCONFIG:= \
+-       CONFIG_ATA_SFF=y \
+-       CONFIG_PATA_PDC_OLD
+-  FILES:=$(LINUX_DIR)/drivers/ata/pata_pdc202xx_old.ko
+-  AUTOLOAD:=$(call AutoLoad,41,pata_pdc202xx_old,1)
+-  $(call AddDepends/ata)
+-endef
+-
+-define KernelPackage/ata-pdc202xx-old/description
+- This option enables support for the Promise 20246, 20262, 20263,
+- 20265 and 20267 adapters
+-endef
+-
+-$(eval $(call KernelPackage,ata-pdc202xx-old))
+-
+-
+-define KernelPackage/ata-piix
+-  TITLE:=Intel PIIX PATA/SATA support
+-  KCONFIG:=CONFIG_ATA_PIIX
+-  FILES:=$(LINUX_DIR)/drivers/ata/ata_piix.ko
+-  AUTOLOAD:=$(call AutoLoad,41,ata_piix,1)
+-  $(call AddDepends/ata)
+-endef
+-
+-define KernelPackage/ata-piix/description
+- SATA support for Intel ICH5/6/7/8 series host controllers and
+- PATA support for Intel ESB/ICH/PIIX3/PIIX4 series host controllers
+-endef
+-
+-$(eval $(call KernelPackage,ata-piix))
+-
+-
+-define KernelPackage/ata-sil
+-  TITLE:=Silicon Image SATA support
+-  KCONFIG:=CONFIG_SATA_SIL
+-  FILES:=$(LINUX_DIR)/drivers/ata/sata_sil.ko
+-  AUTOLOAD:=$(call AutoLoad,41,sata_sil,1)
+-  $(call AddDepends/ata)
+-endef
+-
+-define KernelPackage/ata-sil/description
+- Support for Silicon Image Serial ATA controllers
+-endef
+-
+-$(eval $(call KernelPackage,ata-sil))
+-
+-
+-define KernelPackage/ata-sil24
+-  TITLE:=Silicon Image 3124/3132 SATA support
+-  KCONFIG:=CONFIG_SATA_SIL24
+-  FILES:=$(LINUX_DIR)/drivers/ata/sata_sil24.ko
+-  AUTOLOAD:=$(call AutoLoad,41,sata_sil24,1)
+-  $(call AddDepends/ata)
+-endef
+-
+-define KernelPackage/ata-sil24/description
+- Support for Silicon Image 3124/3132 Serial ATA controllers
+-endef
+-
+-$(eval $(call KernelPackage,ata-sil24))
+-
+-
+-define KernelPackage/ata-via-sata
+-  TITLE:=VIA SATA support
+-  KCONFIG:=CONFIG_SATA_VIA
+-  FILES:=$(LINUX_DIR)/drivers/ata/sata_via.ko
+-  AUTOLOAD:=$(call AutoLoad,41,sata_via,1)
+-  $(call AddDepends/ata)
+-endef
+-
+-define KernelPackage/ata-via-sata/description
+- This option enables support for VIA Serial ATA
+-endef
+-
+-$(eval $(call KernelPackage,ata-via-sata))
+-
+ 
+ define KernelPackage/block2mtd
+   SUBMENU:=$(BLOCK_MENU)
+@@ -433,28 +315,6 @@ endef
+ $(eval $(call KernelPackage,md-multipath))
+ 
+ 
+-define KernelPackage/libsas
+-  SUBMENU:=$(BLOCK_MENU)
+-  DEPENDS:=@TARGET_x86
+-  TITLE:=SAS Domain Transport Attributes
+-  KCONFIG:=CONFIG_SCSI_SAS_LIBSAS \
+-	CONFIG_SCSI_SAS_ATTRS \
+-	CONFIG_SCSI_SAS_ATA=y \
+-	CONFIG_SCSI_SAS_HOST_SMP=y \
+-	CONFIG_SCSI_SAS_LIBSAS_DEBUG=y
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/scsi/scsi_transport_sas.ko \
+-	$(LINUX_DIR)/drivers/scsi/libsas/libsas.ko
+-  AUTOLOAD:=$(call AutoLoad,29,scsi_transport_sas libsas,1)
+-endef
+-
+-define KernelPackage/libsas/description
+- SAS Domain Transport Attributes support
+-endef
+-
+-$(eval $(call KernelPackage,libsas,1))
+-
+-
+ define KernelPackage/loop
+   SUBMENU:=$(BLOCK_MENU)
+   TITLE:=Loopback device support
+@@ -472,24 +332,6 @@ endef
+ $(eval $(call KernelPackage,loop))
+ 
+ 
+-define KernelPackage/mvsas
+-  SUBMENU:=$(BLOCK_MENU)
+-  TITLE:=Marvell 88SE6440 SAS/SATA driver
+-  DEPENDS:=@TARGET_x86 +kmod-libsas
+-  KCONFIG:= \
+-	CONFIG_SCSI_MVSAS \
+-	CONFIG_SCSI_MVSAS_TASKLET=n
+-  FILES:=$(LINUX_DIR)/drivers/scsi/mvsas/mvsas.ko
+-  AUTOLOAD:=$(call AutoLoad,40,mvsas,1)
+-endef
+-
+-define KernelPackage/mvsas/description
+- Kernel support for the Marvell SAS SCSI adapters
+-endef
+-
+-$(eval $(call KernelPackage,mvsas))
+-
+-
+ define KernelPackage/nbd
+   SUBMENU:=$(BLOCK_MENU)
+   TITLE:=Network block device support
+@@ -505,29 +347,6 @@ endef
+ $(eval $(call KernelPackage,nbd))
+ 
+ 
+-define KernelPackage/nvme
+-  SUBMENU:=$(BLOCK_MENU)
+-  TITLE:=NVM Express block device
+-  DEPENDS:=@PCI_SUPPORT +kmod-hwmon-core
+-  KCONFIG:= \
+-	CONFIG_NVME_CORE \
+-	CONFIG_BLK_DEV_NVME \
+-	CONFIG_NVME_MULTIPATH=n \
+-	CONFIG_NVME_HWMON=y
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/nvme/host/nvme-core.ko \
+-	$(LINUX_DIR)/drivers/nvme/host/nvme.ko
+-  AUTOLOAD:=$(call AutoLoad,30,nvme-core nvme,1)
+-endef
+-
+-define KernelPackage/nvme/description
+- Kernel module for NVM Express solid state drives directly
+- connected to the PCI or PCI Express bus.
+-endef
+-
+-$(eval $(call KernelPackage,nvme))
+-
+-
+ define KernelPackage/scsi-core
+   SUBMENU:=$(BLOCK_MENU)
+   TITLE:=SCSI device support
+@@ -559,43 +378,6 @@ endef
+ $(eval $(call KernelPackage,scsi-generic))
+ 
+ 
+-define KernelPackage/cdrom
+-  TITLE:=Kernel library module for CD / DVD drives
+-  KCONFIG:=CONFIG_CDROM
+-  HIDDEN:=1
+-  FILES:=$(LINUX_DIR)/drivers/cdrom/cdrom.ko
+-endef
+-
+-$(eval $(call KernelPackage,cdrom))
+-
+-
+-define KernelPackage/scsi-cdrom
+-  SUBMENU:=$(BLOCK_MENU)
+-  TITLE:=Kernel support for CD / DVD drives
+-  DEPENDS:=+kmod-scsi-core +kmod-cdrom
+-  KCONFIG:= \
+-    CONFIG_BLK_DEV_SR \
+-    CONFIG_BLK_DEV_SR_VENDOR=n
+-  FILES:=$(LINUX_DIR)/drivers/scsi/sr_mod.ko
+-  AUTOLOAD:=$(call AutoLoad,45,sr_mod)
+-endef
+-
+-$(eval $(call KernelPackage,scsi-cdrom))
+-
+-
+-define KernelPackage/scsi-tape
+-  SUBMENU:=$(BLOCK_MENU)
+-  TITLE:=Kernel support for scsi tape drives
+-  DEPENDS:=+kmod-scsi-core
+-  KCONFIG:= \
+-    CONFIG_CHR_DEV_ST
+-  FILES:= \
+-    $(LINUX_DIR)/drivers/scsi/st.ko
+-  AUTOLOAD:=$(call AutoLoad,45,st)
+-endef
+-
+-$(eval $(call KernelPackage,scsi-tape))
+-
+ define KernelPackage/iosched-bfq
+   SUBMENU:=$(BLOCK_MENU)
+   TITLE:=Kernel support for BFQ I/O scheduler
+diff --git a/package/kernel/linux/modules/can.mk b/package/kernel/linux/modules/can.mk
+index c86d02d..4a96ab6 100644
+--- a/package/kernel/linux/modules/can.mk
++++ b/package/kernel/linux/modules/can.mk
+@@ -7,303 +7,3 @@
+ 
+ CAN_MENU:=CAN Support
+ 
+-define KernelPackage/can
+-  SUBMENU:=$(CAN_MENU)
+-  TITLE:=CAN bus support
+-  KCONFIG:=\
+-	CONFIG_CAN=m \
+-	CONFIG_CAN_DEV \
+-	CONFIG_CAN_NETLINK=y \
+-	CONFIG_CAN_CALC_BITTIMING=y \
+-	CONFIG_CAN_LEDS=y \
+-	CONFIG_CAN_AT91=n \
+-	CONFIG_CAN_TI_HECC=n \
+-	CONFIG_CAN_MCP251X=n \
+-	CONFIG_CAN_BFIN=n \
+-	CONFIG_CAN_JANZ_ICAN3=n \
+-	CONFIG_PCH_CAN=n \
+-	CONFIG_CAN_GRCAN=n \
+-	CONFIG_CAN_CC770=n \
+-	CONFIG_CAN_MSCAN=n \
+-	CONFIG_CAN_SJA1000=n \
+-	CONFIG_CAN_SOFTING=n \
+-	CONFIG_NET_EMATCH_CANID=n \
+-	CONFIG_CAN_DEBUG_DEVICES=n
+-  FILES:=$(LINUX_DIR)/drivers/net/can/dev/can-dev.ko \
+-	 $(LINUX_DIR)/net/can/can.ko
+-  AUTOLOAD:=$(call AutoProbe,can can-dev)
+-endef
+-
+-define KernelPackage/can/description
+- Kernel module for CAN bus support.
+-endef
+-
+-$(eval $(call KernelPackage,can))
+-
+-
+-define AddDepends/can
+-  SUBMENU:=$(CAN_MENU)
+-  DEPENDS+=kmod-can $(1)
+-endef
+-
+-
+-define KernelPackage/can-bcm
+-  TITLE:=Broadcast Manager CAN Protcol
+-  KCONFIG:=CONFIG_CAN_BCM
+-  FILES:=$(LINUX_DIR)/net/can/can-bcm.ko
+-  AUTOLOAD:=$(call AutoProbe,can-bcm)
+-  $(call AddDepends/can)
+-endef
+-
+-define KernelPackage/can-bcm/description
+- The Broadcast Manager offers content filtering, timeout monitoring,
+- sending of RTR frames, and cyclic CAN messages without permanent user
+- interaction.
+-endef
+-
+-$(eval $(call KernelPackage,can-bcm))
+-
+-
+-define KernelPackage/can-c-can
+-  TITLE:=BOSCH C_CAN/D_CAN drivers
+-  KCONFIG:=CONFIG_CAN_C_CAN
+-  FILES:=$(LINUX_DIR)/drivers/net/can/c_can/c_can.ko
+-  AUTOLOAD:=$(call AutoProbe,c_can)
+-  $(call AddDepends/can)
+-endef
+-
+-define KernelPackage/can-c-can/description
+- This driver adds generic support for the C_CAN/D_CAN chips.
+-endef
+-
+-$(eval $(call KernelPackage,can-c-can))
+-
+-
+-define KernelPackage/can-c-can-pci
+-  TITLE:=PCI Bus based BOSCH C_CAN/D_CAN driver
+-  KCONFIG:=CONFIG_CAN_C_CAN_PCI
+-  DEPENDS:=kmod-can-c-can @PCI_SUPPORT
+-  FILES:=$(LINUX_DIR)/drivers/net/can/c_can/c_can_pci.ko
+-  AUTOLOAD:=$(call AutoProbe,c_can_pci)
+-  $(call AddDepends/can)
+-endef
+-
+-define KernelPackage/can-c-can-pci/description
+- This driver adds support for the C_CAN/D_CAN chips connected
+- to the PCI bus.
+-endef
+-
+-$(eval $(call KernelPackage,can-c-can-pci))
+-
+-
+-define KernelPackage/can-c-can-platform
+-  TITLE:=Platform Bus based BOSCH C_CAN/D_CAN driver
+-  KCONFIG:=CONFIG_CAN_C_CAN_PLATFORM
+-  DEPENDS:=kmod-can-c-can +kmod-regmap-core
+-  FILES:=$(LINUX_DIR)/drivers/net/can/c_can/c_can_platform.ko
+-  AUTOLOAD:=$(call AutoProbe,c_can_platform)
+-  $(call AddDepends/can)
+-endef
+-
+-define KernelPackage/can-c-can-platform/description
+- This driver adds support for the C_CAN/D_CAN chips connected
+- to the "platform bus" (Linux abstraction for directly to the
+- processor attached devices) which can be found on various
+- boards from ST Microelectronics (http://www.st.com) like the
+- SPEAr1310 and SPEAr320 evaluation boards & TI (www.ti.com)
+- boards like am335x, dm814x, dm813x and dm811x.
+-endef
+-
+-$(eval $(call KernelPackage,can-c-can-platform))
+-
+-
+-define KernelPackage/can-flexcan
+-  TITLE:=Support for Freescale FLEXCAN based chips
+-  KCONFIG:=CONFIG_CAN_FLEXCAN
+-  FILES:=$(LINUX_DIR)/drivers/net/can/flexcan/flexcan.ko
+-  AUTOLOAD:=$(call AutoProbe,flexcan)
+-  $(call AddDepends/can,@TARGET_imx)
+-endef
+-
+-define KernelPackage/can-flexcan/description
+- Freescale FLEXCAN CAN bus controller implementation.
+-endef
+-
+-$(eval $(call KernelPackage,can-flexcan))
+-
+-
+-define KernelPackage/can-gw
+-  TITLE:=CAN Gateway/Router
+-  KCONFIG:=CONFIG_CAN_GW
+-  FILES:=$(LINUX_DIR)/net/can/can-gw.ko
+-  AUTOLOAD:=$(call AutoProbe,can-gw)
+-  $(call AddDepends/can)
+-endef
+-
+-define KernelPackage/can-gw/description
+- The CAN Gateway/Router is used to route (and modify) CAN frames.
+-endef
+-
+-$(eval $(call KernelPackage,can-gw))
+-
+-
+-define KernelPackage/can-mcp251x
+-  TITLE:=MCP251x SPI CAN controller
+-  KCONFIG:=\
+-	CONFIG_SPI=y \
+-	CONFIG_CAN_MCP251X
+-  FILES:=$(LINUX_DIR)/drivers/net/can/spi/mcp251x.ko
+-  AUTOLOAD:=$(call AutoProbe,mcp251x)
+-  $(call AddDepends/can)
+-endef
+-
+-define KernelPackage/can-mcp251x/description
+- Microchip MCP251x SPI CAN controller
+-endef
+-
+-$(eval $(call KernelPackage,can-mcp251x))
+-
+-
+-define KernelPackage/can-raw
+-  TITLE:=Raw CAN Protcol
+-  KCONFIG:=CONFIG_CAN_RAW
+-  FILES:=$(LINUX_DIR)/net/can/can-raw.ko
+-  AUTOLOAD:=$(call AutoProbe,can-raw)
+-  $(call AddDepends/can)
+-endef
+-
+-define KernelPackage/can-raw/description
+- The raw CAN protocol option offers access to the CAN bus via
+- the BSD  socket API.
+-endef
+-
+-$(eval $(call KernelPackage,can-raw))
+-
+-
+-define KernelPackage/can-slcan
+-  TITLE:=Serial / USB serial CAN Adaptors (slcan)
+-  KCONFIG:=CONFIG_CAN_SLCAN
+-  FILES:=$(LINUX_DIR)/drivers/net/can/slcan/slcan.ko
+-  AUTOLOAD:=$(call AutoProbe,slcan)
+-  $(call AddDepends/can)
+-endef
+-
+-define KernelPackage/can-slcan/description
+- CAN driver for several 'low cost' CAN interfaces that are attached
+- via serial lines or via USB-to-serial adapters using the LAWICEL
+- ASCII protocol.
+-endef
+-
+-$(eval $(call KernelPackage,can-slcan))
+-
+-
+-define KernelPackage/can-usb-8dev
+-  TITLE:=8 devices USB2CAN interface
+-  KCONFIG:=CONFIG_CAN_8DEV_USB
+-  FILES:=$(LINUX_DIR)/drivers/net/can/usb/usb_8dev.ko
+-  AUTOLOAD:=$(call AutoProbe,usb_8dev)
+-  $(call AddDepends/can,+kmod-usb-core)
+-endef
+-
+-define KernelPackage/can-usb-8dev/description
+- This driver supports the USB2CAN interface
+- from 8 devices (http://www.8devices.com).
+-endef
+-
+-$(eval $(call KernelPackage,can-usb-8dev))
+-
+-
+-define KernelPackage/can-usb-ems
+-  TITLE:=EMS CPC-USB/ARM7 CAN/USB interface
+-  KCONFIG:=CONFIG_CAN_EMS_USB
+-  FILES:=$(LINUX_DIR)/drivers/net/can/usb/ems_usb.ko
+-  AUTOLOAD:=$(call AutoProbe,ems_usb)
+-  $(call AddDepends/can,+kmod-usb-core)
+-endef
+-
+-define KernelPackage/can-usb-ems/description
+- This driver is for the one channel CPC-USB/ARM7 CAN/USB interface
+- from EMS Dr. Thomas Wuensche (http://www.ems-wuensche.de).
+-endef
+-
+-$(eval $(call KernelPackage,can-usb-ems))
+-
+-
+-define KernelPackage/can-usb-esd
+-  TITLE:=ESD USB/2 CAN/USB interface
+-  KCONFIG:=CONFIG_CAN_ESD_USB
+-  FILES:=$(LINUX_DIR)/drivers/net/can/usb/esd_usb.ko
+-  AUTOLOAD:=$(call AutoProbe,esd_usb2 esd_usb)
+-  $(call AddDepends/can,+kmod-usb-core)
+-endef
+-
+-define KernelPackage/can-usb-esd/description
+- This driver supports the CAN-USB/2 interface
+- from esd electronic system design gmbh (http://www.esd.eu).
+-endef
+-
+-$(eval $(call KernelPackage,can-usb-esd))
+-
+-
+-define KernelPackage/can-usb-kvaser
+-  TITLE:=Kvaser CAN/USB interface
+-  KCONFIG:=CONFIG_CAN_KVASER_USB
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/net/can/usb/kvaser_usb/kvaser_usb.ko
+-  AUTOLOAD:=$(call AutoProbe,kvaser_usb)
+-  $(call AddDepends/can,+kmod-usb-core)
+-endef
+-
+-define KernelPackage/can-usb-kvaser/description
+- This driver adds support for Kvaser CAN/USB devices like Kvaser
+- Leaf Light.
+-endef
+-
+-$(eval $(call KernelPackage,can-usb-kvaser))
+-
+-
+-define KernelPackage/can-usb-peak
+-  TITLE:=PEAK PCAN-USB/USB Pro interfaces
+-  KCONFIG:=CONFIG_CAN_PEAK_USB
+-  FILES:=$(LINUX_DIR)/drivers/net/can/usb/peak_usb/peak_usb.ko
+-  AUTOLOAD:=$(call AutoProbe,peak_usb)
+-  $(call AddDepends/can,+kmod-usb-core)
+-endef
+-
+-define KernelPackage/can-usb-peak/description
+- This driver supports the PCAN-USB and PCAN-USB Pro adapters
+- from PEAK-System Technik (http://www.peak-system.com).
+-endef
+-
+-$(eval $(call KernelPackage,can-usb-peak))
+-
+-
+-define KernelPackage/can-vcan
+-  TITLE:=Virtual Local CAN Interface (vcan)
+-  KCONFIG:=CONFIG_CAN_VCAN
+-  FILES:=$(LINUX_DIR)/drivers/net/can/vcan.ko
+-  AUTOLOAD:=$(call AutoProbe,vcan)
+-  $(call AddDepends/can)
+-endef
+-
+-define KernelPackage/can-vcan/description
+- Similar to the network loopback devices, vcan offers a
+- virtual local CAN interface.
+-endef
+-
+-$(eval $(call KernelPackage,can-vcan))
+-
+-define KernelPackage/can-xilinx-can
+-  TITLE:=Xilinx CAN IP
+-  KCONFIG:=CONFIG_CAN_XILINXCAN
+-  FILES:=$(LINUX_DIR)/drivers/net/can/xilinx_can.ko
+-  AUTOLOAD:=$(call AutoProbe,xilinx_can)
+-  $(call AddDepends/can,@TARGET_zynq)
+-endef
+-
+-define KernelPackage/can-xilinx-can/description
+- Xilinx CAN driver. This driver supports both
+- soft AXI CAN IP and Zynq CANPS IP.
+-endef
+-
+-$(eval $(call KernelPackage,can-xilinx-can))
+diff --git a/package/kernel/linux/modules/firewire.mk b/package/kernel/linux/modules/firewire.mk
+index 1e2d942..cc30f54 100644
+--- a/package/kernel/linux/modules/firewire.mk
++++ b/package/kernel/linux/modules/firewire.mk
+@@ -7,70 +7,5 @@
+ 
+ FIREWIRE_MENU:=FireWire support
+ 
+-define KernelPackage/firewire
+-  SUBMENU:=$(FIREWIRE_MENU)
+-  TITLE:=Support for FireWire (new stack)
+-  DEPENDS:=@PCI_SUPPORT +kmod-lib-crc-itu-t
+-  KCONFIG:=CONFIG_FIREWIRE
+-  FILES:=$(LINUX_DIR)/drivers/firewire/firewire-core.ko
+-endef
+-
+-define KernelPackage/firewire/description
+- Kernel support for FireWire (new stack)
+-endef
+-
+-$(eval $(call KernelPackage,firewire))
+-
+-
+-define KernelPackage/firewire-net
+-  SUBMENU:=$(FIREWIRE_MENU)
+-  TITLE:=Support for IP networking over FireWire
+-  DEPENDS:=kmod-firewire
+-  KCONFIG:=CONFIG_FIREWIRE_NET
+-  FILES:=$(LINUX_DIR)/drivers/firewire/firewire-net.ko
+-  AUTOLOAD:=$(call AutoProbe,firewire-net)
+-endef
+-
+-define KernelPackage/firewire-net/description
+- Kernel support for IPv4 over FireWire
+-endef
+-
+-$(eval $(call KernelPackage,firewire-net))
+-
+-
+-define KernelPackage/firewire-ohci
+-  SUBMENU:=$(FIREWIRE_MENU)
+-  TITLE:=Support for OHCI-1394 controllers
+-  DEPENDS:=kmod-firewire
+-  KCONFIG:= \
+-	CONFIG_FIREWIRE_OHCI \
+-	CONFIG_FIREWIRE_OHCI_DEBUG=n \
+-	CONFIG_FIREWIRE_OHCI_REMOTE_DMA=n
+-  FILES:=$(LINUX_DIR)/drivers/firewire/firewire-ohci.ko
+-  AUTOLOAD:=$(call AutoProbe,firewire-ohci)
+-endef
+-
+-
+-define KernelPackage/firewire-ohci/description
+- Kernel support for FireWire OHCI-1394 controllers
+-endef
+-
+-$(eval $(call KernelPackage,firewire-ohci))
+-
+-
+-define KernelPackage/firewire-sbp2
+-  SUBMENU:=$(FIREWIRE_MENU)
+-  TITLE:=Support for SBP-2 devices over FireWire
+-  DEPENDS:=kmod-firewire +kmod-scsi-core
+-  KCONFIG:=CONFIG_FIREWIRE_SBP2
+-  FILES:=$(LINUX_DIR)/drivers/firewire/firewire-sbp2.ko
+-  AUTOLOAD:=$(call AutoProbe,firewire-sbp2)
+-endef
+-
+-define KernelPackage/firewire-sbp2/description
+- Kernel support for SBP-2 devices over FireWire
+-endef
+-
+-$(eval $(call KernelPackage,firewire-sbp2))
+ 
+ 
+
+diff --git a/package/kernel/linux/modules/netdevices.mk b/package/kernel/linux/modules/netdevices.mk
+index d77dabf..60687f0 100644
+--- a/package/kernel/linux/modules/netdevices.mk
++++ b/package/kernel/linux/modules/netdevices.mk
+@@ -7,18 +7,6 @@
+ 
+ NETWORK_DEVICES_MENU:=Network Devices
+ 
+-define KernelPackage/sis190
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=SiS 190 Fast/Gigabit Ethernet support
+-  DEPENDS:=@PCI_SUPPORT +kmod-mii
+-  KCONFIG:=CONFIG_SIS190
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/sis/sis190.ko
+-  AUTOLOAD:=$(call AutoProbe,sis190)
+-endef
+-
+-$(eval $(call KernelPackage,sis190))
+-
+-
+ define KernelPackage/skge
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=SysKonnect Yukon support
+@@ -204,25 +192,6 @@ endef
+ $(eval $(call KernelPackage,mdio-gpio))
+ 
+ 
+-define KernelPackage/et131x
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Agere ET131x Gigabit Ethernet driver
+-  URL:=http://sourceforge.net/projects/et131x
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/net/ethernet/agere/et131x.ko
+-  KCONFIG:= \
+-	CONFIG_ET131X \
+-	CONFIG_ET131X_DEBUG=n
+-  DEPENDS:=@PCI_SUPPORT +kmod-libphy
+-  AUTOLOAD:=$(call AutoProbe,et131x)
+-endef
+-
+-define KernelPackage/et131x/description
+- This package contains the et131x kernel module
+-endef
+-
+-$(eval $(call KernelPackage,et131x))
+-
+ define KernelPackage/phy-microchip
+    SUBMENU:=$(NETWORK_DEVICES_MENU)
+    TITLE:=Microchip Ethernet PHY driver
+@@ -265,22 +234,6 @@ endef
+ $(eval $(call KernelPackage,phylib-qcom))
+ 
+ 
+-define KernelPackage/phy-amd
+-   SUBMENU:=$(NETWORK_DEVICES_MENU)
+-   TITLE:=AMD PHY driver
+-   KCONFIG:=CONFIG_AMD_PHY
+-   DEPENDS:=+kmod-libphy
+-   FILES:=$(LINUX_DIR)/drivers/net/phy/amd.ko
+-   AUTOLOAD:=$(call AutoProbe,amd,1)
+-endef
+-
+-define KernelPackage/phy-amd/description
+-   Currently supports the AMD and Altima PHYs.
+-endef
+-
+-$(eval $(call KernelPackage,phy-amd))
+-
+-
+ define KernelPackage/phy-at803x
+    SUBMENU:=$(NETWORK_DEVICES_MENU)
+    TITLE:=Qualcomm Atheros 8337 internal PHY
+@@ -428,22 +381,6 @@ endef
+ $(eval $(call KernelPackage,phy-marvell-10g))
+ 
+ 
+-define KernelPackage/phy-micrel
+-   SUBMENU:=$(NETWORK_DEVICES_MENU)
+-   TITLE:=Micrel PHYs
+-   KCONFIG:=CONFIG_MICREL_PHY
+-   DEPENDS:=+kmod-libphy +kmod-ptp
+-   FILES:=$(LINUX_DIR)/drivers/net/phy/micrel.ko
+-   AUTOLOAD:=$(call AutoLoad,18,micrel,1)
+-endef
+-
+-define KernelPackage/phy-micrel/description
+-   Supports the KSZ9021, VSC8201, KS8001 PHYs.
+-endef
+-
+-$(eval $(call KernelPackage,phy-micrel))
+-
+-
+ define KernelPackage/phy-realtek
+    SUBMENU:=$(NETWORK_DEVICES_MENU)
+    TITLE:=Realtek Ethernet PHY driver
+@@ -476,22 +413,6 @@ endef
+ $(eval $(call KernelPackage,phy-smsc))
+ 
+ 
+-define KernelPackage/phy-vitesse
+-   SUBMENU:=$(NETWORK_DEVICES_MENU)
+-   TITLE:=Vitesse PHYs
+-   KCONFIG:=CONFIG_VITESSE_PHY
+-   DEPENDS:=+kmod-libphy
+-   FILES:=$(LINUX_DIR)/drivers/net/phy/vitesse.ko
+-   AUTOLOAD:=$(call AutoLoad,18,vitesse,1)
+-endef
+-
+-define KernelPackage/phy-vitesse/description
+-   Currently supports the vsc8244
+-endef
+-
+-$(eval $(call KernelPackage,phy-vitesse))
+-
+-
+ define KernelPackage/phy-airoha-en8811h
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Airoha EN8811H 2.5G Ethernet PHY
+@@ -638,22 +559,6 @@ endef
+ $(eval $(call KernelPackage,switch-bcm53xx-mdio))
+ 
+ 
+-define KernelPackage/switch-ip17xx
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=IC+ IP17XX switch support
+-  DEPENDS:=+kmod-swconfig
+-  KCONFIG:=CONFIG_IP17XX_PHY
+-  FILES:=$(LINUX_DIR)/drivers/net/phy/ip17xx.ko
+-  AUTOLOAD:=$(call AutoLoad,42,ip17xx)
+-endef
+-
+-define KernelPackage/switch-ip17xx/description
+- IC+ IP175C/IP178C switch support
+-endef
+-
+-$(eval $(call KernelPackage,switch-ip17xx))
+-
+-
+ define KernelPackage/switch-rtl8306
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Realtek RTL8306S switch support
+@@ -767,40 +672,6 @@ endef
+ $(eval $(call KernelPackage,switch-ar8xxx))
+ 
+ 
+-define KernelPackage/natsemi
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=National Semiconductor DP8381x series
+-  DEPENDS:=@PCI_SUPPORT
+-  KCONFIG:=CONFIG_NATSEMI
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/natsemi/natsemi.ko
+-  AUTOLOAD:=$(call AutoLoad,20,natsemi)
+-endef
+-
+-define KernelPackage/natsemi/description
+- Kernel modules for National Semiconductor DP8381x series PCI Ethernet
+- adapters.
+-endef
+-
+-$(eval $(call KernelPackage,natsemi))
+-
+-
+-define KernelPackage/r6040
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=RDC Fast-Ethernet support
+-  DEPENDS:=@PCI_SUPPORT +kmod-libphy
+-  KCONFIG:=CONFIG_R6040 \
+-		CONFIG_R6040_NAPI=y
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/rdc/r6040.ko
+-  AUTOLOAD:=$(call AutoProbe,r6040)
+-endef
+-
+-define KernelPackage/r6040/description
+- Kernel modules for RDC Fast-Ethernet adapters.
+-endef
+-
+-$(eval $(call KernelPackage,r6040))
+-
+-
+ define KernelPackage/niu
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Sun Neptune 10Gbit Ethernet support
+@@ -817,22 +688,6 @@ endef
+ $(eval $(call KernelPackage,niu))
+ 
+ 
+-define KernelPackage/sis900
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=SiS 900 Ethernet support
+-  DEPENDS:=@PCI_SUPPORT +kmod-mii
+-  KCONFIG:=CONFIG_SIS900
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/sis/sis900.ko
+-  AUTOLOAD:=$(call AutoProbe,sis900)
+-endef
+-
+-define KernelPackage/sis900/description
+- Kernel modules for Sis 900 Ethernet adapters.
+-endef
+-
+-$(eval $(call KernelPackage,sis900))
+-
+-
+ define KernelPackage/sky2
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=SysKonnect Yukon2 support
+@@ -855,23 +710,6 @@ endef
+ $(eval $(call KernelPackage,sky2))
+ 
+ 
+-define KernelPackage/via-rhine
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Via Rhine ethernet support
+-  DEPENDS:=@PCI_SUPPORT +kmod-mii
+-  KCONFIG:=CONFIG_VIA_RHINE \
+-    CONFIG_VIA_RHINE_MMIO=y
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/via/via-rhine.ko
+-  AUTOLOAD:=$(call AutoProbe,via-rhine)
+-endef
+-
+-define KernelPackage/via-rhine/description
+- Kernel modules for Via Rhine Ethernet chipsets
+-endef
+-
+-$(eval $(call KernelPackage,via-rhine))
+-
+-
+ define KernelPackage/via-velocity
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=VIA Velocity Gigabit Ethernet Adapter kernel support
+@@ -888,42 +726,6 @@ endef
+ $(eval $(call KernelPackage,via-velocity))
+ 
+ 
+-define KernelPackage/8139too
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=RealTek RTL-8139 PCI Fast Ethernet Adapter kernel support
+-  DEPENDS:=@PCI_SUPPORT +kmod-mii
+-  KCONFIG:=CONFIG_8139TOO \
+-    CONFIG_8139TOO_PIO=y \
+-    CONFIG_8139TOO_TUNE_TWISTER=n \
+-    CONFIG_8139TOO_8129=n \
+-    CONFIG_8139_OLD_RX_RESET=n
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/realtek/8139too.ko
+-  AUTOLOAD:=$(call AutoProbe,8139too)
+-endef
+-
+-define KernelPackage/8139too/description
+- Kernel modules for RealTek RTL-8139 PCI Fast Ethernet adapters
+-endef
+-
+-$(eval $(call KernelPackage,8139too))
+-
+-
+-define KernelPackage/8139cp
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=RealTek RTL-8139C+ PCI Fast Ethernet Adapter kernel support
+-  DEPENDS:=@PCI_SUPPORT +kmod-mii
+-  KCONFIG:=CONFIG_8139CP
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/realtek/8139cp.ko
+-  AUTOLOAD:=$(call AutoProbe,8139cp)
+-endef
+-
+-define KernelPackage/8139cp/description
+- Kernel module for RealTek RTL-8139C+ PCI Fast Ethernet adapters
+-endef
+-
+-$(eval $(call KernelPackage,8139cp))
+-
+-
+ define KernelPackage/r8169
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=RealTek RTL-8169 PCI Gigabit Ethernet Adapter kernel support
+@@ -942,40 +744,6 @@ endef
+ $(eval $(call KernelPackage,r8169))
+ 
+ 
+-define KernelPackage/ne2k-pci
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=ne2k-pci Ethernet Adapter kernel support
+-  DEPENDS:=@PCI_SUPPORT
+-  KCONFIG:=CONFIG_NE2K_PCI
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/net/ethernet/8390/ne2k-pci.ko \
+-	$(LINUX_DIR)/drivers/net/ethernet/8390/8390.ko
+-  AUTOLOAD:=$(call AutoProbe,8390 ne2k-pci)
+-endef
+-
+-define KernelPackage/ne2k-pci/description
+- Kernel modules for NE2000 PCI Ethernet Adapter kernel
+-endef
+-
+-$(eval $(call KernelPackage,ne2k-pci))
+-
+-
+-define KernelPackage/e100
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Intel(R) PRO/100+ cards kernel support
+-  DEPENDS:=@PCI_SUPPORT +kmod-mii +e100-firmware
+-  KCONFIG:=CONFIG_E100
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/e100.ko
+-  AUTOLOAD:=$(call AutoProbe,e100)
+-endef
+-
+-define KernelPackage/e100/description
+- Kernel modules for Intel(R) PRO/100+ Ethernet adapters
+-endef
+-
+-$(eval $(call KernelPackage,e100))
+-
+-
+ define KernelPackage/e1000
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Intel(R) PRO/1000 PCI cards kernel support
+@@ -1144,44 +912,6 @@ endef
+ $(eval $(call KernelPackage,b44))
+ 
+ 
+-define KernelPackage/3c59x
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=3Com 3c590/3c900 series (592/595/597) Vortex/Boomerang
+-  DEPENDS:=@PCI_SUPPORT +kmod-mii
+-  KCONFIG:=CONFIG_VORTEX
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/3com/3c59x.ko
+-  AUTOLOAD:=$(call AutoProbe,3c59x)
+-endef
+-
+-define KernelPackage/3c59x/description
+- This option enables driver support for a large number of 10mbps and
+- 10/100mbps EISA, PCI and PCMCIA 3Com Ethernet adapters:
+- - "Vortex"    (Fast EtherLink 3c590/3c592/3c595/3c597) EISA and PCI
+- - "Boomerang" (EtherLink XL 3c900 or 3c905)            PCI
+- - "Cyclone"   (3c540/3c900/3c905/3c980/3c575/3c656)    PCI and Cardbus
+- - "Tornado"   (3c905)                                  PCI
+- - "Hurricane" (3c555/3cSOHO)                           PCI
+-endef
+-
+-$(eval $(call KernelPackage,3c59x))
+-
+-
+-define KernelPackage/pcnet32
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=AMD PCnet32 PCI support
+-  DEPENDS:=@(PCI_SUPPORT||TARGET_malta) +kmod-mii
+-  KCONFIG:=CONFIG_PCNET32
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/amd/pcnet32.ko
+-  AUTOLOAD:=$(call AutoProbe,pcnet32)
+-endef
+-
+-define KernelPackage/pcnet32/description
+- Kernel modules for AMD PCnet32 Ethernet adapters
+-endef
+-
+-$(eval $(call KernelPackage,pcnet32))
+-
+-
+ define KernelPackage/tg3
+   TITLE:=Broadcom Tigon3 Gigabit Ethernet
+   KCONFIG:=CONFIG_TIGON3 \
+@@ -1199,40 +929,6 @@ endef
+ $(eval $(call KernelPackage,tg3))
+ 
+ 
+-define KernelPackage/hfcpci
+-  TITLE:=HFC PCI cards (single port) support for mISDN
+-  KCONFIG:=CONFIG_MISDN_HFCPCI
+-  DEPENDS:=@PCI_SUPPORT +kmod-misdn
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  FILES:=$(LINUX_DIR)/drivers/isdn/hardware/mISDN/hfcpci.ko
+-  AUTOLOAD:=$(call AutoLoad,31,hfcpci)
+-endef
+-
+-define KernelPackage/hfcpci/description
+- Kernel modules for Cologne AG's HFC pci cards (single port)
+- using the mISDN V2 stack
+-endef
+-
+-$(eval $(call KernelPackage,hfcpci))
+-
+-
+-define KernelPackage/hfcmulti
+-  TITLE:=HFC multiport cards (HFC-4S/8S/E1) support for mISDN
+-  KCONFIG:=CONFIG_MISDN_HFCMULTI
+-  DEPENDS:=@PCI_SUPPORT +kmod-misdn
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  FILES:=$(LINUX_DIR)/drivers/isdn/hardware/mISDN/hfcmulti.ko
+-  AUTOLOAD:=$(call AutoLoad,31,hfcmulti)
+-endef
+-
+-define KernelPackage/hfcmulti/description
+- Kernel modules for Cologne AG's HFC multiport cards (HFC-4S/8S/E1)
+- using the mISDN V2 stack
+-endef
+-
+-$(eval $(call KernelPackage,hfcmulti))
+-
+-
+ define KernelPackage/macvlan
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=MAC-VLAN support
+@@ -1300,23 +996,6 @@ endef
+ $(eval $(call KernelPackage,tulip))
+ 
+ 
+-define KernelPackage/solos-pci
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Solos ADSL2+ multiport modem
+-  DEPENDS:=@PCI_SUPPORT +kmod-atm
+-  KCONFIG:=CONFIG_ATM_SOLOS
+-  FILES:=$(LINUX_DIR)/drivers/atm/solos-pci.ko
+-  AUTOLOAD:=$(call AutoProbe,solos-pci)
+-endef
+-
+-define KernelPackage/solos-pci/description
+- Kernel module for Traverse Technologies' Solos PCI cards
+- and Geos ADSL2+ x86 motherboard
+-endef
+-
+-$(eval $(call KernelPackage,solos-pci))
+-
+-
+ define KernelPackage/dummy
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Dummy network device
+@@ -1350,39 +1029,6 @@ endef
+ $(eval $(call KernelPackage,ifb))
+ 
+ 
+-define KernelPackage/dm9000
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Davicom 9000 Ethernet support
+-  DEPENDS:=+kmod-mii
+-  KCONFIG:=CONFIG_DM9000 \
+-    CONFIG_DM9000_DEBUGLEVEL=4 \
+-    CONFIG_DM9000_FORCE_SIMPLE_PHY_POLL=y
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/davicom/dm9000.ko
+-  AUTOLOAD:=$(call AutoLoad,34,dm9000)
+-endef
+-
+-define KernelPackage/dm9000/description
+- Kernel driver for Davicom 9000 Ethernet adapters.
+-endef
+-
+-$(eval $(call KernelPackage,dm9000))
+-
+-
+-define KernelPackage/forcedeth
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=nForce Ethernet support
+-  DEPENDS:=@PCI_SUPPORT
+-  KCONFIG:=CONFIG_FORCEDETH
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/nvidia/forcedeth.ko
+-  AUTOLOAD:=$(call AutoProbe,forcedeth)
+-endef
+-
+-define KernelPackage/forcedeth/description
+- Kernel driver for Nvidia Ethernet support
+-endef
+-
+-$(eval $(call KernelPackage,forcedeth))
+-
+ define KernelPackage/fixed-phy
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=MDIO Bus/PHY emulation with fixed speed/link PHYs
+@@ -1417,39 +1063,6 @@ endef
+ $(eval $(call KernelPackage,of-mdio))
+ 
+ 
+-define KernelPackage/vmxnet3
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=VMware VMXNET3 ethernet driver
+-  DEPENDS:=@PCI_SUPPORT
+-  KCONFIG:=CONFIG_VMXNET3
+-  FILES:=$(LINUX_DIR)/drivers/net/vmxnet3/vmxnet3.ko
+-  AUTOLOAD:=$(call AutoLoad,35,vmxnet3)
+-endef
+-
+-define KernelPackage/vmxnet3/description
+- Kernel modules for VMware VMXNET3 ethernet adapters.
+-endef
+-
+-$(eval $(call KernelPackage,vmxnet3))
+-
+-
+-define KernelPackage/spi-ks8995
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Micrel/Kendin KS8995 Ethernet switch control
+-  FILES:=$(LINUX_DIR)/drivers/net/phy/spi_ks8995.ko
+-  KCONFIG:=CONFIG_MICREL_KS8995MA \
+-	CONFIG_SPI=y \
+-	CONFIG_SPI_MASTER=y
+-  AUTOLOAD:=$(call AutoLoad,50,spi_ks8995)
+-endef
+-
+-define KernelPackage/spi-ks8995/description
+-  Kernel module for Micrel/Kendin KS8995 ethernet switch
+-endef
+-
+-$(eval $(call KernelPackage,spi-ks8995))
+-
+-
+ define KernelPackage/ethoc
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Opencore.org ethoc driver
+@@ -1499,186 +1112,6 @@ endef
+ 
+ $(eval $(call KernelPackage,bnx2x))
+ 
+-define KernelPackage/be2net
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
+-  DEPENDS:=@PCI_SUPPORT +kmod-hwmon-core
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/emulex/benet/be2net.ko
+-  KCONFIG:= \
+-	CONFIG_BE2NET \
+-	CONFIG_BE2NET_BE2=y \
+-	CONFIG_BE2NET_BE3=y \
+-	CONFIG_BE2NET_LANCER=y \
+-	CONFIG_BE2NET_SKYHAWK=y \
+-	CONFIG_BE2NET_HWMON=y
+-  AUTOLOAD:=$(call AutoProbe,be2net)
+-endef
+-
+-define KernelPackage/be2net/description
+-  Broadcom Emulex OneConnect 10Gbit SFP+ support, OneConnect OCe10xxx OCe11xxx OCe14xxx, LightPulse LPe12xxx
+-endef
+-
+-$(eval $(call KernelPackage,be2net))
+-
+-define KernelPackage/mlx4-core
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Mellanox ConnectX(R) mlx4 core Network Driver
+-  DEPENDS:=@PCI_SUPPORT +kmod-ptp
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlx4/mlx4_core.ko \
+-	$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlx4/mlx4_en.ko
+-  KCONFIG:= CONFIG_MLX4_EN \
+-	CONFIG_MLX4_EN_DCB=n \
+-	CONFIG_MLX4_CORE=y \
+-	CONFIG_MLX4_CORE_GEN2=y \
+-	CONFIG_MLX4_DEBUG=n
+-  AUTOLOAD:=$(call AutoProbe,mlx4_core mlx4_en)
+-endef
+-
+-define KernelPackage/mlx4-core/description
+-  Supports Mellanox ConnectX-3 series and previous cards
+-endef
+-
+-$(eval $(call KernelPackage,mlx4-core))
+-
+-define KernelPackage/mlx5-core
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Mellanox ConnectX(R) mlx5 core Network Driver
+-  DEPENDS:=@PCI_SUPPORT +kmod-ptp +kmod-mlxfw +kmod-hwmon-core
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko
+-  KCONFIG:= CONFIG_MLX5_CORE \
+-	CONFIG_MLX5_CORE_EN=y \
+-	CONFIG_MLX5_CORE_EN_DCB=n \
+-	CONFIG_MLX5_CORE_IPOIB=n \
+-	CONFIG_MLX5_EN_ARFS=n \
+-	CONFIG_MLX5_EN_IPSEC=n \
+-	CONFIG_MLX5_EN_RXNFC=y \
+-	CONFIG_MLX5_EN_TLS=n \
+-	CONFIG_MLX5_ESWITCH=n \
+-	CONFIG_MLX5_FPGA=n \
+-	CONFIG_MLX5_FPGA_IPSEC=n \
+-	CONFIG_MLX5_FPGA_TLS=n \
+-	CONFIG_MLX5_MPFS=y \
+-	CONFIG_MLX5_SW_STEERING=n \
+-	CONFIG_MLX5_TC_CT=n \
+-	CONFIG_MLX5_TLS=n \
+-	CONFIG_MLX5_VFIO_PCI=n
+-  AUTOLOAD:=$(call AutoProbe,mlx5_core)
+-endef
+-
+-define KernelPackage/mlx5-core/description
+-  Supports Mellanox Connect-IB/ConnectX-4 series and later cards
+-endef
+-
+-$(eval $(call KernelPackage,mlx5-core))
+-
+-
+-define KernelPackage/mlxfw
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Mellanox Technologies firmware flash module
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlxfw/mlxfw.ko
+-  KCONFIG:=CONFIG_MLXFW
+-  AUTOLOAD:=$(call AutoProbe,mlxfw)
+-endef
+-
+-define KernelPackage/mlxfw/description
+-  This driver supports Mellanox Technologies Firmware
+-  flashing common logic.
+-endef
+-
+-$(eval $(call KernelPackage,mlxfw))
+-
+-
+-define KernelPackage/mlxsw-core
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Mellanox Technologies Switch ASICs support
+-  DEPENDS:=@TARGET_x86_64 +kmod-mlxfw +kmod-hwmon-core
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlxsw/mlxsw_core.ko
+-  KCONFIG:= \
+-  CONFIG_MLXSW_CORE \
+-  CONFIG_MLXSW_CORE_HWMON=y \
+-  CONFIG_MLXSW_CORE_THERMAL=y
+-  AUTOLOAD:=$(call AutoProbe,mlxsw_core)
+-endef
+-
+-define KernelPackage/mlxsw-core/description
+-  This driver supports Mellanox Technologies Switch ASICs family.
+-endef
+-
+-$(eval $(call KernelPackage,mlxsw-core))
+-
+-
+-define KernelPackage/mlxsw-i2c
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=I2C bus implementation for Mellanox Technologies Switch ASICs
+-  DEPENDS:=+kmod-mlxsw-core +kmod-i2c-core
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlxsw/mlxsw_i2c.ko
+-  KCONFIG:=CONFIG_MLXSW_I2C
+-  AUTOLOAD:=$(call AutoProbe,mlxsw_i2c)
+-endef
+-
+-define KernelPackage/mlxsw-i2c/description
+-  This is I2C bus implementation for Mellanox Technologies Switch ASICs.
+-endef
+-
+-$(eval $(call KernelPackage,mlxsw-i2c))
+-
+-
+-define KernelPackage/mlxsw-minimal
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Mellanox Technologies minimal I2C support
+-  DEPENDS:=+kmod-mlxsw-i2c
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlxsw/mlxsw_minimal.ko
+-  KCONFIG:=CONFIG_MLXSW_MINIMAL
+-  AUTOLOAD:=$(call AutoProbe,mlxsw_minimal)
+-endef
+-
+-define KernelPackage/mlxsw-minimal/description
+-  This driver supports I2C access for Mellanox Technologies Switch
+-  ASICs.
+-endef
+-
+-$(eval $(call KernelPackage,mlxsw-minimal))
+-
+-
+-define KernelPackage/mlxsw-pci
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=PCI bus implementation for Mellanox Technologies Switch ASICs
+-  DEPENDS:=@PCI_SUPPORT +kmod-mlxsw-core
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlxsw/mlxsw_pci.ko
+-  KCONFIG:=CONFIG_MLXSW_PCI
+-  AUTOLOAD:=$(call AutoProbe,mlxsw_pci)
+-endef
+-
+-define KernelPackage/mlxsw-pci/description
+-  This is PCI bus implementation for Mellanox Technologies Switch ASICs.
+-endef
+-
+-$(eval $(call KernelPackage,mlxsw-pci))
+-
+-
+-define KernelPackage/mlxsw-spectrum
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Mellanox Technologies Spectrum family support
+-  DEPENDS:= \
+-  +kmod-mlxsw-pci +kmod-lib-objagg +kmod-lib-parman \
+-  +kmod-ip6-tunnel +kmod-ptp +kmod-sched-act-sample +kmod-vxlan
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlxsw/mlxsw_spectrum.ko
+-  KCONFIG:= \
+-  CONFIG_MLXSW_SPECTRUM \
+-  CONFIG_MLXSW_SPECTRUM_DCB=y \
+-  CONFIG_NET_SWITCHDEV=y \
+-  CONFIG_DCB=y
+-  AUTOLOAD:=$(call AutoProbe,mlxsw_spectrum)
+-endef
+-
+-define KernelPackage/mlxsw-spectrum/description
+-  This driver supports Mellanox Technologies
+-  Spectrum/Spectrum-2/Spectrum-3/Spectrum-4 Ethernet Switch ASICs.
+-endef
+-
+-$(eval $(call KernelPackage,mlxsw-spectrum))
+-
+ 
+ define KernelPackage/net-selftests
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+@@ -1696,26 +1129,6 @@ endef
+ $(eval $(call KernelPackage,net-selftests))
+ 
+ 
+-define KernelPackage/qlcnic
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  DEPENDS:=@PCI_SUPPORT +kmod-hwmon-core
+-  TITLE:=QLogic QLE8240 and QLE8242 device support
+-  KCONFIG:= \
+-	CONFIG_QLCNIC \
+-	CONFIG_QLCNIC_HWMON=y \
+-	CONFIG_QLCNIC_SRIOV=y
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/qlogic/qlcnic/qlcnic.ko
+-  AUTOLOAD:=$(call AutoProbe,qlcnic)
+-endef
+-
+-define KernelPackage/qlcnic/description
+-  This driver supports QLogic QLE8240 and QLE8242 Converged Ethernet
+-  devices.
+-endef
+-
+-$(eval $(call KernelPackage,qlcnic))
+-
+-
+ define KernelPackage/sfp
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=SFP cage support
+@@ -1781,44 +1194,6 @@ endef
+ 
+ $(eval $(call KernelPackage,igc))
+ 
+-define KernelPackage/sfc
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Solarflare SFC9000/SFC9100/EF100-family support
+-  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-lib-crc32c +kmod-ptp +kmod-hwmon-core
+-  KCONFIG:= \
+-	CONFIG_SFC \
+-	CONFIG_SFC_MTD=y \
+-	CONFIG_SFC_MCDI_MON=y \
+-	CONFIG_SFC_MCDI_LOGGING=y \
+-	CONFIG_SFC_SRIOV=y
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/sfc/sfc.ko
+-  AUTOLOAD:=$(call AutoProbe,sfc)
+-endef
+-
+-define KernelPackage/sfc/description
+-  Solarflare SFC9000/SFC9100/EF100-family support
+-  Solarflare EF100 support requires at least kernel version 5.9
+-endef
+-
+-$(eval $(call KernelPackage,sfc))
+-
+-define KernelPackage/sfc-falcon
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Solarflare SFC4000 support
+-  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-lib-crc32c +kmod-i2c-algo-bit
+-  KCONFIG:= \
+-	CONFIG_SFC_FALCON \
+-	CONFIG_SFC_FALCON_MTD=y
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/sfc/falcon/sfc-falcon.ko
+-  AUTOLOAD:=$(call AutoProbe,sfc-falcon)
+-endef
+-
+-define KernelPackage/sfc-falcon/description
+-  Solarflare SFC4000 support
+-endef
+-
+-$(eval $(call KernelPackage,sfc-falcon))
+-
+ 
+ define KernelPackage/wwan
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+@@ -1931,19 +1306,3 @@ define KernelPackage/lan743x/description
+ endef
+ 
+ $(eval $(call KernelPackage,lan743x))
+-
+-define KernelPackage/amazon-ena
+-  SUBMENU:=$(NETWORK_DEVICES_MENU)
+-  TITLE:=Elastic Network Adapter (for Amazon AWS)
+-  DEPENDS:=@TARGET_x86_64||TARGET_armsr_armv8
+-  KCONFIG:=CONFIG_ENA_ETHERNET
+-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/amazon/ena/ena.ko
+-  AUTOLOAD:=$(call AutoLoad,12,ena)
+-endef
+-
+-define KernelPackage/amazon-ena/description
+-  This driver supports Elastic Network Adapter (ENA)
+-  used by Amazon AWS T3 (2018) and later instances.
+-endef
+-
+-$(eval $(call KernelPackage,amazon-ena))
+diff --git a/package/kernel/linux/modules/netsupport.mk b/package/kernel/linux/modules/netsupport.mk
+index 02d8329..9823f37 100644
+--- a/package/kernel/linux/modules/netsupport.mk
++++ b/package/kernel/linux/modules/netsupport.mk
+@@ -143,28 +143,6 @@ endef
+ $(eval $(call KernelPackage,nsh))
+ 
+ 
+-define KernelPackage/misdn
+-  SUBMENU:=$(NETWORK_SUPPORT_MENU)
+-  TITLE:=mISDN (ISDN) Support
+-  KCONFIG:= \
+-	CONFIG_ISDN=y \
+-  	CONFIG_MISDN \
+-	CONFIG_MISDN_DSP \
+-	CONFIG_MISDN_L1OIP
+-  FILES:= \
+-  	$(LINUX_DIR)/drivers/isdn/mISDN/mISDN_core.ko \
+-	$(LINUX_DIR)/drivers/isdn/mISDN/mISDN_dsp.ko \
+-	$(LINUX_DIR)/drivers/isdn/mISDN/l1oip.ko
+-  AUTOLOAD:=$(call AutoLoad,30,mISDN_core mISDN_dsp l1oip)
+-endef
+-
+-define KernelPackage/misdn/description
+-  Modular ISDN driver support
+-endef
+-
+-$(eval $(call KernelPackage,misdn))
+-
+-
+ define KernelPackage/ipip
+   SUBMENU:=$(NETWORK_SUPPORT_MENU)
+   TITLE:=IP-in-IP encapsulation
+@@ -1354,44 +1332,6 @@ endef
+ 
+ $(eval $(call KernelPackage,mpls))
+ 
+-define KernelPackage/9pnet
+-  SUBMENU:=$(NETWORK_SUPPORT_MENU)
+-  TITLE:=Plan 9 Resource Sharing Support (9P2000)
+-  KCONFIG:= \
+-	CONFIG_NET_9P \
+-	CONFIG_NET_9P_DEBUG=n \
+-	CONFIG_NET_9P_FD=n
+-  FILES:= \
+-	$(LINUX_DIR)/net/9p/9pnet.ko
+-  AUTOLOAD:=$(call AutoLoad,29,9pnet)
+-endef
+-
+-define KernelPackage/9pnet/description
+-  Kernel support support for
+-  Plan 9 resource sharing via the 9P2000 protocol.
+-endef
+-
+-$(eval $(call KernelPackage,9pnet))
+-
+-define KernelPackage/9pvirtio
+-  SUBMENU:=$(NETWORK_SUPPORT_MENU)
+-  TITLE:=Plan 9 Virtio Support
+-  DEPENDS:=+kmod-9pnet @VIRTIO_SUPPORT
+-  KCONFIG:= \
+-	CONFIG_NET_9P_XEN=n \
+-	CONFIG_NET_9P_VIRTIO
+-  FILES:= \
+-	$(LINUX_DIR)/net/9p/9pnet_virtio.ko
+-  AUTOLOAD:=$(call AutoLoad,29,9pnet_virtio)
+-endef
+-
+-define KernelPackage/9pvirtio/description
+-  Kernel support support for
+-  Plan 9 resource sharing for virtio.
+-endef
+-
+-$(eval $(call KernelPackage,9pvirtio))
+-
+ 
+ define KernelPackage/nlmon
+   SUBMENU:=$(NETWORK_SUPPORT_MENU)
+diff --git a/package/kernel/linux/modules/other.mk b/package/kernel/linux/modules/other.mk
+index bbebcf3..145e97a 100644
+--- a/package/kernel/linux/modules/other.mk
++++ b/package/kernel/linux/modules/other.mk
+@@ -202,134 +202,6 @@ endef
+ $(eval $(call KernelPackage,eeprom-at25))
+ 
+ 
+-define KernelPackage/google-firmware
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Google firmware drivers (Coreboot, VPD, Memconsole)
+-  KCONFIG:= \
+-	CONFIG_GOOGLE_FIRMWARE=y \
+-	CONFIG_GOOGLE_COREBOOT_TABLE \
+-	CONFIG_GOOGLE_MEMCONSOLE \
+-	CONFIG_GOOGLE_MEMCONSOLE_COREBOOT \
+-	CONFIG_GOOGLE_VPD
+-  FILES:= \
+-	  $(LINUX_DIR)/drivers/firmware/google/coreboot_table.ko \
+-	  $(LINUX_DIR)/drivers/firmware/google/memconsole.ko \
+-	  $(LINUX_DIR)/drivers/firmware/google/memconsole-coreboot.ko \
+-	  $(LINUX_DIR)/drivers/firmware/google/vpd-sysfs.ko
+-  AUTOLOAD:=$(call AutoProbe,coreboot_table memconsole-coreboot vpd-sysfs)
+-endef
+-
+-define KernelPackage/google-firmware/description
+-  Kernel modules for Google firmware drivers. Useful for examining firmware and
+-  boot details on devices using a Google bootloader based on Coreboot. Provides
+-  files like /sys/firmware/log and /sys/firmware/vpd.
+-endef
+-
+-$(eval $(call KernelPackage,google-firmware))
+-
+-
+-define KernelPackage/lkdtm
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Linux Kernel Dump Test Tool Module
+-  KCONFIG:=CONFIG_LKDTM
+-  FILES:=$(LINUX_DIR)/drivers/misc/lkdtm/lkdtm.ko
+-  AUTOLOAD:=$(call AutoProbe,lkdtm)
+-endef
+-
+-define KernelPackage/lkdtm/description
+- This module enables testing of the different dumping mechanisms by inducing
+- system failures at predefined crash points.
+-endef
+-
+-$(eval $(call KernelPackage,lkdtm))
+-
+-
+-define KernelPackage/mlx_wdt
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Mellanox Watchdog
+-  DEPENDS:=@TARGET_x86 +kmod-regmap-core
+-  KCONFIG:= \
+-	CONFIG_MELLANOX_PLATFORM=y \
+-	CONFIG_MLX_WDT
+-  FILES:=$(LINUX_DIR)/drivers/watchdog/mlx_wdt.ko
+-  AUTOLOAD:=$(call AutoProbe,mlx_wdt)
+-endef
+-
+-define KernelPackage/mlx_wdt/description
+-  This is the driver for the hardware watchdog on Mellanox systems.
+-  This driver can be used together with the watchdog daemon.
+-  It can also watch your kernel to make sure it doesn't freeze,
+-  and if it does, it reboots your system after a certain amount of
+-  time.
+-endef
+-
+-$(eval $(call KernelPackage,mlx_wdt))
+-
+-
+-define KernelPackage/mlxreg
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Mellanox platform register access
+-  DEPENDS:=@TARGET_x86 +kmod-i2c-mux-mlxcpld
+-  KCONFIG:= \
+-	CONFIG_MELLANOX_PLATFORM=y \
+-	CONFIG_MLX_PLATFORM \
+-	CONFIG_MLXREG_HOTPLUG \
+-	CONFIG_MLXREG_IO \
+-	CONFIG_SENSORS_MLXREG_FAN \
+-	CONFIG_LEDS_MLXREG
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/platform/x86/mlx-platform.ko \
+-	$(LINUX_DIR)/drivers/platform/mellanox/mlxreg-hotplug.ko \
+-	$(LINUX_DIR)/drivers/platform/mellanox/mlxreg-io.ko \
+-	$(LINUX_DIR)/drivers/hwmon/mlxreg-fan.ko \
+-	$(LINUX_DIR)/drivers/leds/leds-mlxreg.ko
+-  AUTOLOAD:=$(call AutoProbe,mlx-platform mlxreg-hotplug mlxreg-io mlxreg-fan leds-mlxreg)
+-endef
+-
+-define KernelPackage/mlxreg/description
+-  Allows access to Mellanox programmable device register
+-  space through sysfs interface. The sets of registers for sysfs access
+-  are defined per system type bases and include the registers related
+-  to system resets operation, system reset causes monitoring and some
+-  kinds of mux selection.
+-endef
+-
+-$(eval $(call KernelPackage,mlxreg))
+-
+-
+-define KernelPackage/mlxreg-lc
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Mellanox line card platform support
+-  DEPENDS:=kmod-mlxreg +kmod-regmap-i2c
+-  KCONFIG:=CONFIG_MLXREG_LC
+-  FILES:=$(LINUX_DIR)/drivers/platform/mellanox/mlxreg-lc.ko
+-  AUTOLOAD:=$(call AutoProbe,mlxreg-lc)
+-endef
+-
+-define KernelPackage/mlxreg-lc/description
+-  Provides support for the Mellanox MSN4800-XX line cards,
+-  which are the part of MSN4800 Ethernet modular switch systems.
+-endef
+-
+-$(eval $(call KernelPackage,mlxreg-lc))
+-
+-
+-define KernelPackage/mlxreg-sn2201
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Nvidia SN2201 platform support
+-  DEPENDS:=kmod-mlxreg +kmod-regmap-i2c
+-  KCONFIG:=CONFIG_NVSW_SN2201
+-  FILES:=$(LINUX_DIR)/drivers/platform/mellanox/nvsw-sn2201.ko
+-  AUTOLOAD:=$(call AutoProbe,nvsw-sn2201)
+-endef
+-
+-define KernelPackage/mlxreg-sn2201/description
+-  Provides support for the Nvidia SN2201 platform.
+-endef
+-
+-$(eval $(call KernelPackage,mlxreg-sn2201))
+-
+-
+ define KernelPackage/pinctrl-mcp23s08
+   SUBMENU:=$(OTHER_MENU)
+   TITLE:=Microchip MCP23xxx I/O expander
+@@ -397,43 +269,6 @@ endef
+ $(eval $(call KernelPackage,ppdev))
+ 
+ 
+-define KernelPackage/parport-pc
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Parallel port interface (PC-style) support
+-  DEPENDS:=+kmod-ppdev
+-  KCONFIG:= \
+-	CONFIG_KS0108=n \
+-	CONFIG_PARPORT_PC \
+-	CONFIG_PARPORT_1284=y \
+-	CONFIG_PARPORT_PC_FIFO=y \
+-	CONFIG_PARPORT_PC_PCMCIA=n \
+-	CONFIG_PARPORT_PC_SUPERIO=y \
+-	CONFIG_PARPORT_SERIAL=n \
+-	CONFIG_PARIDE=n \
+-	CONFIG_SCSI_IMM=n \
+-	CONFIG_SCSI_PPA=n
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/parport/parport_pc.ko
+-  AUTOLOAD:=$(call AutoLoad,51,parport_pc)
+-endef
+-
+-$(eval $(call KernelPackage,parport-pc))
+-
+-
+-define KernelPackage/lp
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Parallel port line printer device support
+-  DEPENDS:=+kmod-ppdev
+-  KCONFIG:= \
+-	CONFIG_PRINTER
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/char/lp.ko
+-  AUTOLOAD:=$(call AutoLoad,52,lp)
+-endef
+-
+-$(eval $(call KernelPackage,lp))
+-
+-
+ define KernelPackage/mmc
+   SUBMENU:=$(OTHER_MENU)
+   TITLE:=MMC/SD Card Support
+@@ -584,96 +419,6 @@ endef
+ $(eval $(call KernelPackage,mfd))
+ 
+ 
+-define KernelPackage/mtdtests
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=MTD subsystem tests
+-  KCONFIG:=CONFIG_MTD_TESTS
+-  FILES:=\
+-	$(LINUX_DIR)/drivers/mtd/tests/mtd_nandbiterrs.ko \
+-	$(LINUX_DIR)/drivers/mtd/tests/mtd_nandecctest.ko \
+-	$(LINUX_DIR)/drivers/mtd/tests/mtd_oobtest.ko \
+-	$(LINUX_DIR)/drivers/mtd/tests/mtd_pagetest.ko \
+-	$(LINUX_DIR)/drivers/mtd/tests/mtd_readtest.ko \
+-	$(LINUX_DIR)/drivers/mtd/tests/mtd_speedtest.ko \
+-	$(LINUX_DIR)/drivers/mtd/tests/mtd_stresstest.ko \
+-	$(LINUX_DIR)/drivers/mtd/tests/mtd_subpagetest.ko \
+-	$(LINUX_DIR)/drivers/mtd/tests/mtd_test.ko \
+-	$(LINUX_DIR)/drivers/mtd/tests/mtd_torturetest.ko
+-endef
+-
+-define KernelPackage/mtdtests/description
+- Kernel modules for MTD subsystem/driver testing
+-endef
+-
+-$(eval $(call KernelPackage,mtdtests))
+-
+-
+-define KernelPackage/mtdoops
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Log panic/oops to an MTD buffer
+-  KCONFIG:=CONFIG_MTD_OOPS
+-  FILES:=$(LINUX_DIR)/drivers/mtd/mtdoops.ko
+-endef
+-
+-define KernelPackage/mtdoops/description
+- Kernel modules for Log panic/oops to an MTD buffer
+-endef
+-
+-$(eval $(call KernelPackage,mtdoops))
+-
+-
+-define KernelPackage/mtdram
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Test MTD driver using RAM
+-  KCONFIG:=CONFIG_MTD_MTDRAM \
+-    CONFIG_MTDRAM_TOTAL_SIZE=4096 \
+-    CONFIG_MTDRAM_ERASE_SIZE=128
+-  FILES:=$(LINUX_DIR)/drivers/mtd/devices/mtdram.ko
+-endef
+-
+-define KernelPackage/mtdram/description
+-  Test MTD driver using RAM
+-endef
+-
+-$(eval $(call KernelPackage,mtdram))
+-
+-
+-define KernelPackage/ramoops
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Ramoops (pstore-ram)
+-  DEFAULT:=m if ALL_KMODS
+-  KCONFIG:=CONFIG_PSTORE_RAM \
+-	CONFIG_PSTORE_CONSOLE=y
+-  DEPENDS:=+kmod-pstore +kmod-reed-solomon
+-  FILES:= $(LINUX_DIR)/fs/pstore/ramoops.ko
+-  AUTOLOAD:=$(call AutoLoad,30,ramoops,1)
+-endef
+-
+-define KernelPackage/ramoops/description
+- Kernel module for pstore-ram (ramoops) crash log storage
+-endef
+-
+-$(eval $(call KernelPackage,ramoops))
+-
+-
+-define KernelPackage/reed-solomon
+-  SUBMENU:=$(OTHER_MENU)
+-  TITLE:=Reed-Solomon error correction
+-  DEFAULT:=m if ALL_KMODS
+-  KCONFIG:=CONFIG_REED_SOLOMON \
+-	CONFIG_REED_SOLOMON_DEC8=y \
+-	CONFIG_REED_SOLOMON_ENC8=y
+-  FILES:= $(LINUX_DIR)/lib/reed_solomon/reed_solomon.ko
+-  AUTOLOAD:=$(call AutoLoad,30,reed_solomon,1)
+-endef
+-
+-define KernelPackage/reed-solomon/description
+- Kernel module for Reed-Solomon error correction
+-endef
+-
+-$(eval $(call KernelPackage,reed-solomon))
+-
+-
+ define KernelPackage/serial-8250
+   SUBMENU:=$(OTHER_MENU)
+   TITLE:=8250 UARTs
+diff --git a/package/kernel/linux/modules/pcmcia.mk b/package/kernel/linux/modules/pcmcia.mk
+index 11c2106..7e7be1c 100644
+--- a/package/kernel/linux/modules/pcmcia.mk
++++ b/package/kernel/linux/modules/pcmcia.mk
+@@ -7,107 +7,3 @@
+ 
+ PCMCIA_MENU:=PCMCIA support
+ 
+-define KernelPackage/pcmcia-core
+-  SUBMENU:=$(PCMCIA_MENU)
+-  TITLE:=PCMCIA/CardBus support
+-  DEPENDS:=@PCMCIA_SUPPORT
+-  KCONFIG:= \
+-	CONFIG_PCMCIA \
+-	CONFIG_PCMCIA_LOAD_CIS=y \
+-	CONFIG_CARDBUS \
+-	CONFIG_PCCARD \
+-	PCMCIA_DEBUG=n
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/pcmcia/pcmcia_core.ko \
+-	$(LINUX_DIR)/drivers/pcmcia/pcmcia.ko
+-  AUTOLOAD:=$(call AutoLoad,25,pcmcia_core pcmcia)
+-endef
+-
+-define KernelPackage/pcmcia-core/description
+- Kernel support for PCMCIA/CardBus controllers
+-endef
+-
+-$(eval $(call KernelPackage,pcmcia-core))
+-
+-
+-define AddDepends/pcmcia
+-  SUBMENU:=$(PCMCIA_MENU)
+-  DEPENDS+=kmod-pcmcia-core $(1)
+-endef
+-
+-
+-define KernelPackage/pcmcia-rsrc
+-  TITLE:=PCMCIA resource support
+-  KCONFIG:=CONFIG_PCCARD_NONSTATIC=y
+-  FILES:=$(LINUX_DIR)/drivers/pcmcia/pcmcia_rsrc.ko
+-  AUTOLOAD:=$(call AutoLoad,26,pcmcia_rsrc)
+-  $(call AddDepends/pcmcia)
+-endef
+-
+-define KernelPackage/pcmcia-rsrc/description
+- Kernel support for PCMCIA resource allocation
+-endef
+-
+-$(eval $(call KernelPackage,pcmcia-rsrc))
+-
+-
+-define KernelPackage/pcmcia-yenta
+-  TITLE:=yenta socket driver
+-  KCONFIG:=CONFIG_YENTA
+-  FILES:=$(LINUX_DIR)/drivers/pcmcia/yenta_socket.ko
+-  AUTOLOAD:=$(call AutoLoad,41,yenta_socket)
+-  DEPENDS:=+kmod-pcmcia-rsrc
+-  $(call AddDepends/pcmcia)
+-endef
+-
+-$(eval $(call KernelPackage,pcmcia-yenta))
+-
+-
+-define KernelPackage/pcmcia-serial
+-  TITLE:=Serial devices support
+-  KCONFIG:= \
+-	CONFIG_PCMCIA_SERIAL_CS \
+-	CONFIG_SERIAL_8250_CS
+-  FILES:=$(LINUX_DIR)/drivers/tty/serial/8250/serial_cs.ko
+-  AUTOLOAD:=$(call AutoLoad,45,serial_cs)
+-  DEPENDS:=+kmod-serial-8250
+-  $(call AddDepends/pcmcia)
+-endef
+-
+-define KernelPackage/pcmcia-serial/description
+- Kernel support for PCMCIA/CardBus serial devices
+-endef
+-
+-$(eval $(call KernelPackage,pcmcia-serial))
+-
+-
+-define KernelPackage/pcmcia-pd6729
+-  TITLE:=Cirrus PD6729 compatible bridge support
+-  KCONFIG:=CONFIG_PD6729
+-  FILES:=$(LINUX_DIR)/drivers/pcmcia/pd6729.ko
+-  AUTOLOAD:=$(call AutoLoad,41,pd6729)
+-  DEPENDS:=+kmod-pcmcia-rsrc
+-  $(call AddDepends/pcmcia)
+-endef
+-
+-define KernelPackage/pcmcia-pd6729/description
+- Kernel support for the Cirrus PD6729 PCI-to-PCMCIA bridge
+-endef
+-
+-$(eval $(call KernelPackage,pcmcia-pd6729))
+-
+-
+-define KernelPackage/pcmcia-nozomi
+-  TITLE:=Option Fusion+ card
+-  KCONFIG:=CONFIG_NOZOMI
+-  FILES:=$(LINUX_DIR)/drivers/tty/nozomi.ko
+-  AUTOLOAD:=$(call AutoLoad,60,nozomi)
+-  DEPENDS:=+kmod-pcmcia-rsrc
+-  $(call AddDepends/pcmcia)
+-endef
+-
+-define KernelPackage/pcmcia-nozomi/description
+- Kernel support for Option Fusion+ card
+-endef
+-
+-$(eval $(call KernelPackage,pcmcia-nozomi))
+diff --git a/package/kernel/linux/modules/rtc.mk b/package/kernel/linux/modules/rtc.mk
+index 3658e85..acab6bd 100644
+--- a/package/kernel/linux/modules/rtc.mk
++++ b/package/kernel/linux/modules/rtc.mk
+@@ -7,249 +7,3 @@
+ 
+ RTC_MENU:=RTC Real-Time Clock Support
+ 
+-define KernelPackage/rtc-ds1307
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Dallas/Maxim DS1307 (and compatible) RTC support
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core +kmod-regmap-i2c +kmod-hwmon-core
+-  KCONFIG:=CONFIG_RTC_DRV_DS1307 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-ds1307.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-ds1307)
+-endef
+-
+-define KernelPackage/rtc-ds1307/description
+- Kernel module for Dallas/Maxim DS1307/DS1337/DS1338/DS1340/DS1388/DS3231,
+- Epson RX-8025 and various other compatible RTC chips connected via I2C.
+-endef
+-
+-$(eval $(call KernelPackage,rtc-ds1307))
+-
+-
+-define KernelPackage/rtc-ds1374
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Dallas/Maxim DS1374 RTC support
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core
+-  KCONFIG:=CONFIG_RTC_DRV_DS1374 \
+-	CONFIG_RTC_DRV_DS1374_WDT=n \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-ds1374.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-ds1374)
+-endef
+-
+-define KernelPackage/rtc-ds1374/description
+- Kernel module for Dallas/Maxim DS1374.
+-endef
+-
+-$(eval $(call KernelPackage,rtc-ds1374))
+-
+-
+-define KernelPackage/rtc-ds1672
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Dallas/Maxim DS1672 RTC support
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core
+-  KCONFIG:=CONFIG_RTC_DRV_DS1672 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-ds1672.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-ds1672)
+-endef
+-
+-define KernelPackage/rtc-ds1672/description
+- Kernel module for Dallas/Maxim DS1672 RTC.
+-endef
+-
+-$(eval $(call KernelPackage,rtc-ds1672))
+-
+-
+-define KernelPackage/rtc-em3027
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Microelectronic EM3027 RTC support
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core
+-  KCONFIG:=CONFIG_RTC_DRV_EM3027 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-em3027.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-em3027)
+-endef
+-
+-define KernelPackage/rtc-em3027/description
+- Kernel module for Microelectronic EM3027 RTC.
+-endef
+-
+-$(eval $(call KernelPackage,rtc-em3027))
+-
+-
+-define KernelPackage/rtc-isl1208
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Intersil ISL1208 RTC support
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core
+-  KCONFIG:=CONFIG_RTC_DRV_ISL1208 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-isl1208.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-isl1208)
+-endef
+-
+-define KernelPackage/rtc-isl1208/description
+- Kernel module for Intersil ISL1208 RTC.
+-endef
+-
+-$(eval $(call KernelPackage,rtc-isl1208))
+-
+-
+-define KernelPackage/rtc-mv
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Marvell SoC RTC support
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  KCONFIG:=CONFIG_RTC_DRV_MV \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-mv.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-mv)
+-endef
+-
+-define KernelPackage/rtc-mv/description
+- Kernel module for Marvell SoC RTC.
+-endef
+-
+-$(eval $(call KernelPackage,rtc-mv))
+-
+-
+-define KernelPackage/rtc-pcf8563
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Philips PCF8563/Epson RTC8564 RTC support
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core
+-  KCONFIG:=CONFIG_RTC_DRV_PCF8563 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-pcf8563.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-pcf8563)
+-endef
+-
+-define KernelPackage/rtc-pcf8563/description
+- Kernel module for Philips PCF8563 RTC chip.
+- The Epson RTC8564 should work as well.
+-endef
+-
+-$(eval $(call KernelPackage,rtc-pcf8563))
+-
+-
+-define KernelPackage/rtc-pcf2123
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Philips PCF2123 RTC support
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-regmap-spi
+-  KCONFIG:=CONFIG_RTC_DRV_PCF2123 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-pcf2123.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-pcf2123)
+-endef
+-
+-define KernelPackage/rtc-pcf2123/description
+- Kernel module for Philips PCF2123 RTC chip
+-endef
+-
+-$(eval $(call KernelPackage,rtc-pcf2123))
+-
+-define KernelPackage/rtc-pcf2127
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=NXP PCF2127 and PCF2129 RTC support
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core +kmod-regmap-spi
+-  KCONFIG:=CONFIG_RTC_DRV_PCF2127 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-pcf2127.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-pcf2127)
+-endef
+-
+-define KernelPackage/rtc-pcf2127/description
+- Kernel module for NXP PCF2127 and PCF2129 RTC chip
+-endef
+-
+-$(eval $(call KernelPackage,rtc-pcf2127))
+-
+-define KernelPackage/rtc-r7301
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Epson RTC7301 support
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-regmap-mmio
+-  KCONFIG:=CONFIG_RTC_DRV_R7301 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-r7301.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-r7301)
+-endef
+-
+-define KernelPackage/rtc-r7301/description
+- Kernel module for Epson RTC7301 RTC chip
+-endef
+-
+-$(eval $(call KernelPackage,rtc-r7301))
+-
+-define KernelPackage/rtc-rs5c372a
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Ricoh R2025S/D, RS5C372A/B, RV5C386, RV5C387A
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core
+-  KCONFIG:=CONFIG_RTC_DRV_RS5C372 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-rs5c372.ko
+-  AUTOLOAD:=$(call AutoLoad,50,rtc-rs5c372,1)
+-endef
+-
+-define KernelPackage/rtc-rs5c372a/description
+- Kernel module for Ricoh R2025S/D, RS5C372A/B, RV5C386, RV5C387A RTC on chip module
+-endef
+-
+-$(eval $(call KernelPackage,rtc-rs5c372a))
+-
+-define KernelPackage/rtc-rx8025
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Epson RX-8025 / RX-8035
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core
+-  KCONFIG:=CONFIG_RTC_DRV_RX8025 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-rx8025.ko
+-  AUTOLOAD:=$(call AutoLoad,50,rtc-rx8025,1)
+-endef
+-
+-define KernelPackage/rtc-rx8025/description
+- Kernel module for Epson RX-8025 and RX-8035 I2C RTC chip
+-endef
+-
+-$(eval $(call KernelPackage,rtc-rx8025))
+-
+-define KernelPackage/rtc-s35390a
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Seico S-35390A
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core
+-  KCONFIG:=CONFIG_RTC_DRV_S35390A \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-s35390a.ko
+-  AUTOLOAD:=$(call AutoLoad,50,rtc-s35390a,1)
+-endef
+-
+-define KernelPackage/rtc-s35390a/description
+- Kernel module for Seiko Instruments S-35390A I2C RTC chip
+-endef
+-
+-$(eval $(call KernelPackage,rtc-s35390a))
+-
+-define KernelPackage/rtc-x1205
+-  SUBMENU:=$(RTC_MENU)
+-  TITLE:=Xicor Intersil X1205
+-  DEFAULT:=m if ALL_KMODS && RTC_SUPPORT
+-  DEPENDS:=+kmod-i2c-core
+-  KCONFIG:=CONFIG_RTC_DRV_X1205 \
+-	CONFIG_RTC_CLASS=y
+-  FILES:=$(LINUX_DIR)/drivers/rtc/rtc-x1205.ko
+-  AUTOLOAD:=$(call AutoProbe,rtc-x1205)
+-endef
+-
+-define KernelPackage/rtc-x1205/description
+- Kernel module for Xicor Intersil X1205 I2C RTC chip
+-endef
+-
+-$(eval $(call KernelPackage,rtc-x1205))
+diff --git a/package/kernel/linux/modules/sound.mk b/package/kernel/linux/modules/sound.mk
+index 623f65a..4343c6e 100644
+--- a/package/kernel/linux/modules/sound.mk
++++ b/package/kernel/linux/modules/sound.mk
+@@ -100,23 +100,6 @@ endef
+ $(eval $(call KernelPackage,ac97))
+ 
+ 
+-define KernelPackage/sound-mpu401
+-  TITLE:=MPU-401 uart driver
+-  KCONFIG:=CONFIG_SND_MPU401_UART
+-  FILES:= \
+-	$(LINUX_DIR)/sound/drivers/mpu401/snd-mpu401-uart.ko
+-  AUTOLOAD:=$(call AutoLoad,35,snd-mpu401-uart)
+-  $(call AddDepends/sound)
+-endef
+-
+-define KernelPackage/sound-mpu401/description
+- support for MIDI ports compatible with the Roland MPU-401
+- interface in UART mode.
+-endef
+-
+-$(eval $(call KernelPackage,sound-mpu401))
+-
+-
+ define KernelPackage/sound-seq
+   TITLE:=Sequencer support
+   FILES:= \
+@@ -134,57 +117,6 @@ endef
+ $(eval $(call KernelPackage,sound-seq))
+ 
+ 
+-define KernelPackage/sound-ens1371
+-  TITLE:=(Creative) Ensoniq AudioPCI 1371
+-  KCONFIG:=CONFIG_SND_ENS1371
+-  DEPENDS:=@PCI_SUPPORT +kmod-ac97
+-  FILES:=$(LINUX_DIR)/sound/pci/snd-ens1371.ko
+-  AUTOLOAD:=$(call AutoLoad,36,snd-ens1371)
+-  $(call AddDepends/sound)
+-endef
+-
+-define KernelPackage/sound-ens1371/description
+- support for (Creative) Ensoniq AudioPCI 1371 chips
+-endef
+-
+-$(eval $(call KernelPackage,sound-ens1371))
+-
+-
+-define KernelPackage/sound-i8x0
+-  TITLE:=Intel/SiS/nVidia/AMD/ALi AC97 Controller
+-  DEPENDS:=+kmod-ac97
+-  KCONFIG:=CONFIG_SND_INTEL8X0
+-  FILES:=$(LINUX_DIR)/sound/pci/snd-intel8x0.ko
+-  AUTOLOAD:=$(call AutoLoad,36,snd-intel8x0)
+-  $(call AddDepends/sound)
+-endef
+-
+-define KernelPackage/sound-i8x0/description
+- support for the integrated AC97 sound device on motherboards
+- with Intel/SiS/nVidia/AMD chipsets, or ALi chipsets using
+- the M5455 Audio Controller.
+-endef
+-
+-$(eval $(call KernelPackage,sound-i8x0))
+-
+-
+-define KernelPackage/sound-via82xx
+-  TITLE:=VIA 82xx AC97 Controller
+-  DEPENDS:=+kmod-ac97 +kmod-sound-mpu401
+-  KCONFIG:=CONFIG_SND_VIA82XX
+-  FILES:=$(LINUX_DIR)/sound/pci/snd-via82xx.ko
+-  AUTOLOAD:=$(call AutoLoad,36,snd-via82xx)
+-  $(call AddDepends/sound)
+-endef
+-
+-define KernelPackage/sound-via82xx/description
+- support for the integrated AC97 sound device on motherboards
+- with VIA chipsets.
+-endef
+-
+-$(eval $(call KernelPackage,sound-via82xx))
+-
+-
+ define KernelPackage/sound-soc-core
+   TITLE:=SoC sound support
+   DEPENDS:=+kmod-regmap-core +kmod-ac97
+@@ -201,18 +133,6 @@ endef
+ $(eval $(call KernelPackage,sound-soc-core))
+ 
+ 
+-define KernelPackage/sound-soc-ac97
+-  TITLE:=AC97 Codec support
+-  KCONFIG:=CONFIG_SND_SOC_AC97_CODEC
+-  FILES:=$(LINUX_DIR)/sound/soc/codecs/snd-soc-ac97.ko
+-  AUTOLOAD:=$(call AutoLoad,57,snd-soc-ac97)
+-  DEPENDS:=+kmod-ac97 +kmod-sound-soc-core
+-  $(call AddDepends/sound)
+-endef
+-
+-$(eval $(call KernelPackage,sound-soc-ac97))
+-
+-
+ define KernelPackage/sound-soc-imx
+   TITLE:=IMX SoC support
+   KCONFIG:=\
+@@ -314,39 +234,6 @@ endef
+ $(eval $(call KernelPackage,sound-soc-spdif))
+ 
+ 
+-define KernelPackage/pcspkr
+-  DEPENDS:=@TARGET_x86 +kmod-input-core
+-  TITLE:=PC speaker support
+-  KCONFIG:= \
+-	CONFIG_SND_PCSP
+-  FILES:= \
+-	$(LINUX_DIR)/sound/drivers/pcsp/snd-pcsp.ko
+-  AUTOLOAD:=$(call AutoLoad,50,snd-pcsp)
+-  $(call AddDepends/sound)
+-endef
+-
+-define KernelPackage/pcspkr/description
+- This enables sounds (tones) through the pc speaker
+-endef
+-
+-$(eval $(call KernelPackage,pcspkr))
+-
+-define KernelPackage/sound-dummy
+-  $(call AddDepends/sound)
+-  TITLE:=Null sound output driver (sink)
+-  KCONFIG:= \
+-	CONFIG_SND_DUMMY
+-  FILES:= \
+-	$(LINUX_DIR)/sound/drivers/snd-dummy.ko
+-  AUTOLOAD:=$(call AutoLoad,32,snd-dummy)
+-endef
+-
+-define KernelPackage/sound-dummy/description
+- Dummy sound device for Alsa when no hardware present
+-endef
+-
+-$(eval $(call KernelPackage,sound-dummy))
+-
+ define KernelPackage/sound-hda-core
+   SUBMENU:=$(SOUND_MENU)
+   TITLE:=HD Audio Sound Core Support
+@@ -372,210 +259,4 @@ endef
+ 
+ $(eval $(call KernelPackage,sound-hda-core))
+ 
+-define KernelPackage/sound-hda-codec-realtek
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:= HD Audio Realtek Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_REALTEK
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-realtek.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-realtek)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-realtek/description
+- Kernel modules for Intel HDA Realtek codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-realtek))
+-
+-define KernelPackage/sound-hda-codec-cmedia
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio C-Media Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_CMEDIA
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-cmedia.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-cmedia)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-cmedia/description
+- Kernel modules for HD Audio C-Media codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-cmedia))
+-
+-define KernelPackage/sound-hda-codec-analog
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio Analog Devices Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_ANALOG
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-analog.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-analog)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-analog/description
+- Kernel modules for HD Audio Analog Devices codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-analog))
+-
+-define KernelPackage/sound-hda-codec-idt
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio Sigmatel IDT Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_SIGMATEL
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-idt.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-idt)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-idt/description
+- Kernel modules for HD Audio Sigmatel IDT codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-idt))
+-
+-define KernelPackage/sound-hda-codec-si3054
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio Silicon Labs 3054 Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_SI3054
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-si3054.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-si3054)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-si3054/description
+- Kernel modules for HD Audio Silicon Labs 3054 codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-si3054))
+-
+-define KernelPackage/sound-hda-codec-cirrus
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio Cirrus Logic Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_CIRRUS
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-cirrus.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-cirrus)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-cirrus/description
+- Kernel modules for HD Audio Cirrus Logic codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-cirrus))
+-
+-define KernelPackage/sound-hda-codec-ca0110
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio Creative CA0110 Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_CA0110
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-ca0110.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-ca0110)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-ca0110/description
+- Kernel modules for HD Audio Creative CA0110 codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-ca0110))
+-
+-define KernelPackage/sound-hda-codec-ca0132
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio Creative CA0132 Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_CA0132 \
+-	CONFIG_SND_HDA_CODEC_CA0132_DSP=n
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-ca0132.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-ca0132)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-ca0132/description
+- Kernel modules for HD Audio Creative CA0132 codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-ca0132))
+-
+-define KernelPackage/sound-hda-codec-conexant
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio Conexant Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_CONEXANT
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-conexant.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-conexant)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-conexant/description
+- Kernel modules for HD Audio Conexant codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-conexant))
+-
+-define KernelPackage/sound-hda-codec-via
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio Via Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_VIA
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-via.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-via)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-via/description
+- Kernel modules for HD Audio VIA codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-via))
+-
+-define KernelPackage/sound-hda-codec-hdmi
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio HDMI/DisplayPort Codec
+-  KCONFIG:= \
+-	CONFIG_SND_HDA_CODEC_HDMI
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-hdmi.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-codec-hdmi)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-codec-hdmi/description
+- Kernel modules for HD Audio HDMI codec support
+-endef
+-
+-$(eval $(call KernelPackage,sound-hda-codec-hdmi))
+-
+-define KernelPackage/sound-hda-intel
+-  SUBMENU:=$(SOUND_MENU)
+-  TITLE:=HD Audio Intel Driver
+-  DEPENDS:=@TARGET_x86
+-  KCONFIG:= \
+-	CONFIG_SOUND_PCI \
+-	CONFIG_SND_HDA_INTEL
+-  FILES:= \
+-	$(LINUX_DIR)/sound/pci/hda/snd-hda-intel.ko \
+-	$(LINUX_DIR)/sound/hda/snd-intel-dspcfg.ko
+-  AUTOLOAD:=$(call AutoProbe,snd-hda-intel)
+-  $(call AddDepends/sound,kmod-sound-hda-core)
+-endef
+-
+-define KernelPackage/sound-hda-intel/description
+- Kernel modules for HD Audio Intel driver support
+-endef
+ 
+-$(eval $(call KernelPackage,sound-hda-intel))
+diff --git a/package/kernel/linux/modules/usb.mk b/package/kernel/linux/modules/usb.mk
+index 458c8c4..b0f030d 100644
+--- a/package/kernel/linux/modules/usb.mk
++++ b/package/kernel/linux/modules/usb.mk
+@@ -1090,73 +1090,6 @@ endef
+ $(eval $(call KernelPackage,usb-storage-uas))
+ 
+ 
+-define KernelPackage/usb-atm
+-  TITLE:=Support for ATM on USB bus
+-  DEPENDS:=+kmod-atm
+-  KCONFIG:=CONFIG_USB_ATM
+-  FILES:=$(LINUX_DIR)/drivers/usb/atm/usbatm.ko
+-  AUTOLOAD:=$(call AutoProbe,usbatm)
+-  $(call AddDepends/usb)
+-endef
+-
+-define KernelPackage/usb-atm/description
+- Kernel support for USB DSL modems
+-endef
+-
+-$(eval $(call KernelPackage,usb-atm))
+-
+-
+-define AddDepends/usb-atm
+-  SUBMENU:=$(USB_MENU)
+-  DEPENDS+=kmod-usb-atm $(1)
+-endef
+-
+-
+-define KernelPackage/usb-atm-speedtouch
+-  TITLE:=SpeedTouch USB ADSL modems support
+-  KCONFIG:=CONFIG_USB_SPEEDTOUCH
+-  FILES:=$(LINUX_DIR)/drivers/usb/atm/speedtch.ko
+-  AUTOLOAD:=$(call AutoProbe,speedtch)
+-  $(call AddDepends/usb-atm)
+-endef
+-
+-define KernelPackage/usb-atm-speedtouch/description
+- Kernel support for SpeedTouch USB ADSL modems
+-endef
+-
+-$(eval $(call KernelPackage,usb-atm-speedtouch))
+-
+-
+-define KernelPackage/usb-atm-ueagle
+-  TITLE:=Eagle 8051 based USB ADSL modems support
+-  FILES:=$(LINUX_DIR)/drivers/usb/atm/ueagle-atm.ko
+-  KCONFIG:=CONFIG_USB_UEAGLEATM
+-  AUTOLOAD:=$(call AutoProbe,ueagle-atm)
+-  $(call AddDepends/usb-atm)
+-endef
+-
+-define KernelPackage/usb-atm-ueagle/description
+- Kernel support for Eagle 8051 based USB ADSL modems
+-endef
+-
+-$(eval $(call KernelPackage,usb-atm-ueagle))
+-
+-
+-define KernelPackage/usb-atm-cxacru
+-  TITLE:=cxacru
+-  FILES:=$(LINUX_DIR)/drivers/usb/atm/cxacru.ko
+-  KCONFIG:=CONFIG_USB_CXACRU
+-  AUTOLOAD:=$(call AutoProbe,cxacru)
+-  $(call AddDepends/usb-atm)
+-endef
+-
+-define KernelPackage/usb-atm-cxacru/description
+- Kernel support for cxacru based USB ADSL modems
+-endef
+-
+-$(eval $(call KernelPackage,usb-atm-cxacru))
+-
+-
+ define KernelPackage/usb-net
+   TITLE:=Kernel modules for USB-to-Ethernet convertors
+   DEPENDS:=+kmod-mii
+@@ -1665,21 +1598,6 @@ endef
+ $(eval $(call KernelPackage,usb-cm109))
+ 
+ 
+-define KernelPackage/usb-test
+-  TITLE:=USB Testing Driver
+-  DEPENDS:=@DEVEL
+-  KCONFIG:=CONFIG_USB_TEST
+-  FILES:=$(LINUX_DIR)/drivers/usb/misc/usbtest.ko
+-  $(call AddDepends/usb)
+-endef
+-
+-define KernelPackage/usb-test/description
+- Kernel support for testing USB Host Controller software
+-endef
+-
+-$(eval $(call KernelPackage,usb-test))
+-
+-
+ define KernelPackage/usbip
+   TITLE := USB-over-IP kernel support
+   KCONFIG:= \
+diff --git a/package/kernel/linux/modules/video.mk b/package/kernel/linux/modules/video.mk
+index 52fc55b..1e5162e 100644
+--- a/package/kernel/linux/modules/video.mk
++++ b/package/kernel/linux/modules/video.mk
+@@ -6,1273 +6,3 @@
+ # See /LICENSE for more information.
+ #
+ 
+-VIDEO_MENU:=Video Support
+-
+-V4L2_DIR=v4l2-core
+-V4L2_USB_DIR=usb
+-V4L2_MEM2MEM_DIR=platform
+-
+-#
+-# Video Display
+-#
+-
+-define KernelPackage/acpi-video
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=ACPI Extensions For Display Adapters
+-  DEPENDS:=@TARGET_x86||TARGET_loongarch64 +kmod-backlight
+-  HIDDEN:=1
+-  KCONFIG:=CONFIG_ACPI_VIDEO
+-  FILES:=$(LINUX_DIR)/drivers/acpi/video.ko
+-  AUTOLOAD:=$(call AutoProbe,video)
+-endef
+-
+-define KernelPackage/acpi-video/description
+-  Kernel support for integrated graphics devices.
+-endef
+-
+-define KernelPackage/acpi-video/x86
+-  KCONFIG+=CONFIG_ACPI_WMI
+-  FILES+=$(LINUX_DIR)/drivers/platform/x86/wmi.ko
+-  AUTOLOAD:=$(call AutoProbe,wmi video)
+-endef
+-
+-$(eval $(call KernelPackage,acpi-video))
+-
+-define KernelPackage/backlight
+-	SUBMENU:=$(VIDEO_MENU)
+-	TITLE:=Backlight support
+-	DEPENDS:=@DISPLAY_SUPPORT
+-	HIDDEN:=1
+-	KCONFIG:=CONFIG_BACKLIGHT_CLASS_DEVICE \
+-		CONFIG_BACKLIGHT_LCD_SUPPORT=y \
+-		CONFIG_LCD_CLASS_DEVICE=n \
+-		CONFIG_BACKLIGHT_GENERIC=n \
+-		CONFIG_BACKLIGHT_ADP8860=n \
+-		CONFIG_BACKLIGHT_ADP8870=n \
+-		CONFIG_BACKLIGHT_OT200=n \
+-		CONFIG_BACKLIGHT_PM8941_WLED=n
+-	FILES:=$(LINUX_DIR)/drivers/video/backlight/backlight.ko
+-	AUTOLOAD:=$(call AutoProbe,video backlight)
+-endef
+-
+-define KernelPackage/backlight/description
+-	Kernel module for Backlight support.
+-endef
+-
+-$(eval $(call KernelPackage,backlight))
+-
+-define KernelPackage/backlight-pwm
+-	SUBMENU:=$(VIDEO_MENU)
+-	TITLE:=PWM Backlight support
+-	DEPENDS:=+kmod-backlight
+-	KCONFIG:=CONFIG_BACKLIGHT_PWM
+-	FILES:=$(LINUX_DIR)/drivers/video/backlight/pwm_bl.ko
+-	AUTOLOAD:=$(call AutoProbe,video pwm_bl)
+-endef
+-
+-define KernelPackage/backlight-pwm/description
+-	Kernel module for PWM based Backlight support.
+-endef
+-
+-$(eval $(call KernelPackage,backlight-pwm))
+-
+-
+-define KernelPackage/fb
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Framebuffer and framebuffer console support
+-  DEPENDS:=@DISPLAY_SUPPORT
+-  KCONFIG:= \
+-	CONFIG_FB \
+-	CONFIG_FB_DEVICE=y \
+-	CONFIG_FB_MXS=n \
+-	CONFIG_FB_SM750=n \
+-	CONFIG_FRAMEBUFFER_CONSOLE=y \
+-	CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y \
+-	CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y \
+-	CONFIG_FONTS=y \
+-	CONFIG_FONT_8x8=y \
+-	CONFIG_FONT_8x16=y \
+-	CONFIG_FONT_6x11=n \
+-	CONFIG_FONT_7x14=n \
+-	CONFIG_FONT_PEARL_8x8=n \
+-	CONFIG_FONT_ACORN_8x8=n \
+-	CONFIG_FONT_MINI_4x6=n \
+-	CONFIG_FONT_6x10=n \
+-	CONFIG_FONT_SUN8x16=n \
+-	CONFIG_FONT_SUN12x22=n \
+-	CONFIG_FONT_10x18=n \
+-	CONFIG_VT=y \
+-	CONFIG_CONSOLE_TRANSLATIONS=y \
+-	CONFIG_VT_CONSOLE=y \
+-	CONFIG_VT_HW_CONSOLE_BINDING=y
+-  FILES:=$(LINUX_DIR)/drivers/video/fbdev/core/fb.ko \
+-	$(LINUX_DIR)/lib/fonts/font.ko \
+-	$(LINUX_DIR)/drivers/video/fbdev/core/fb_io_fops.ko
+-  AUTOLOAD:=$(call AutoLoad,06,fb font)
+-endef
+-
+-define KernelPackage/fb/description
+- Kernel support for framebuffers and framebuffer console.
+-endef
+-
+-define KernelPackage/fb/x86
+-  FILES+=$(LINUX_DIR)/arch/x86/video/fbdev.ko
+-  AUTOLOAD:=$(call AutoLoad,06,fbdev fb font)
+-endef
+-
+-$(eval $(call KernelPackage,fb))
+-
+-
+-define KernelPackage/fb-cfb-fillrect
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Framebuffer software rectangle filling support
+-  DEPENDS:=+kmod-fb
+-  KCONFIG:=CONFIG_FB_CFB_FILLRECT
+-  FILES:=$(LINUX_DIR)/drivers/video/fbdev/core/cfbfillrect.ko
+-  AUTOLOAD:=$(call AutoLoad,07,cfbfillrect)
+-endef
+-
+-define KernelPackage/fb-cfb-fillrect/description
+- Kernel support for software rectangle filling
+-endef
+-
+-$(eval $(call KernelPackage,fb-cfb-fillrect))
+-
+-
+-define KernelPackage/fb-cfb-copyarea
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Framebuffer software copy area support
+-  DEPENDS:=+kmod-fb
+-  KCONFIG:=CONFIG_FB_CFB_COPYAREA
+-  FILES:=$(LINUX_DIR)/drivers/video/fbdev/core/cfbcopyarea.ko
+-  AUTOLOAD:=$(call AutoLoad,07,cfbcopyarea)
+-endef
+-
+-define KernelPackage/fb-cfb-copyarea/description
+- Kernel support for software copy area
+-endef
+-
+-$(eval $(call KernelPackage,fb-cfb-copyarea))
+-
+-define KernelPackage/fb-cfb-imgblt
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Framebuffer software image blit support
+-  DEPENDS:=+kmod-fb
+-  KCONFIG:=CONFIG_FB_CFB_IMAGEBLIT
+-  FILES:=$(LINUX_DIR)/drivers/video/fbdev/core/cfbimgblt.ko
+-  AUTOLOAD:=$(call AutoLoad,07,cfbimgblt)
+-endef
+-
+-define KernelPackage/fb-cfb-imgblt/description
+- Kernel support for software image blitting
+-endef
+-
+-$(eval $(call KernelPackage,fb-cfb-imgblt))
+-
+-
+-define KernelPackage/fb-sys-fops
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Framebuffer software sys ops support
+-  DEPENDS:=+kmod-fb
+-  KCONFIG:=CONFIG_FB_SYS_FOPS
+-  FILES:=$(LINUX_DIR)/drivers/video/fbdev/core/fb_sys_fops.ko
+-  AUTOLOAD:=$(call AutoLoad,07,fb_sys_fops)
+-endef
+-
+-define KernelPackage/fb-sys-fops/description
+- Kernel support for framebuffer sys ops
+-endef
+-
+-$(eval $(call KernelPackage,fb-sys-fops))
+-
+-
+-define KernelPackage/fb-sys-ram
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Framebuffer in system RAM support
+-  DEPENDS:=+kmod-fb
+-  KCONFIG:= \
+-	CONFIG_FB_SYS_COPYAREA \
+-	CONFIG_FB_SYS_FILLRECT \
+-	CONFIG_FB_SYS_IMAGEBLIT
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/video/fbdev/core/syscopyarea.ko \
+-	$(LINUX_DIR)/drivers/video/fbdev/core/sysfillrect.ko \
+-	$(LINUX_DIR)/drivers/video/fbdev/core/sysimgblt.ko
+-  AUTOLOAD:=$(call AutoLoad,07,syscopyarea sysfillrect sysimgblt)
+-endef
+-
+-define KernelPackage/fb-sys-ram/description
+- Kernel support for framebuffers in system RAM
+-endef
+-
+-$(eval $(call KernelPackage,fb-sys-ram))
+-
+-
+-define KernelPackage/fb-tft
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Support for small TFT LCD display modules
+-  DEPENDS:= \
+-	  @GPIO_SUPPORT +kmod-backlight \
+-	  +kmod-fb +kmod-fb-sys-fops +kmod-fb-sys-ram +kmod-spi-bitbang
+-  KCONFIG:= \
+-       CONFIG_FB_BACKLIGHT=y \
+-       CONFIG_FB_DEFERRED_IO=y \
+-       CONFIG_FB_TFT
+-  FILES:= \
+-       $(LINUX_DIR)/drivers/staging/fbtft/fbtft.ko
+-  AUTOLOAD:=$(call AutoLoad,08,fbtft)
+-endef
+-
+-define KernelPackage/fb-tft/description
+-  Support for small TFT LCD display modules
+-endef
+-
+-$(eval $(call KernelPackage,fb-tft))
+-
+-
+-define KernelPackage/fb-tft-ili9486
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=FB driver for the ILI9486 LCD Controller
+-  DEPENDS:=+kmod-fb-tft
+-  KCONFIG:=CONFIG_FB_TFT_ILI9486
+-  FILES:=$(LINUX_DIR)/drivers/staging/fbtft/fb_ili9486.ko
+-  AUTOLOAD:=$(call AutoLoad,09,fb_ili9486)
+-endef
+-
+-define KernelPackage/fb-tft-ili9486/description
+-  FB driver for the ILI9486 LCD Controller
+-endef
+-
+-$(eval $(call KernelPackage,fb-tft-ili9486))
+-
+-
+-define KernelPackage/drm
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Direct Rendering Manager (DRM) support
+-  HIDDEN:=1
+-  DEPENDS:=+kmod-dma-buf +kmod-i2c-core +PACKAGE_kmod-backlight:kmod-backlight \
+-	+kmod-fb
+-  KCONFIG:=CONFIG_DRM
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/gpu/drm/drm.ko \
+-	$(LINUX_DIR)/drivers/gpu/drm/drm_panel_orientation_quirks.ko
+-  AUTOLOAD:=$(call AutoLoad,05,drm)
+-endef
+-
+-define KernelPackage/drm/description
+-  Direct Rendering Manager (DRM) core support
+-endef
+-
+-$(eval $(call KernelPackage,drm))
+-
+-define KernelPackage/drm-buddy
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=A page based buddy allocator
+-  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm
+-  KCONFIG:=CONFIG_DRM_BUDDY
+-  FILES:= $(LINUX_DIR)/drivers/gpu/drm/drm_buddy.ko
+-  AUTOLOAD:=$(call AutoProbe,drm_buddy)
+-endef
+-
+-define KernelPackage/drm-buddy/description
+-  A page based buddy allocator
+-endef
+-
+-$(eval $(call KernelPackage,drm-buddy))
+-
+-define KernelPackage/drm-display-helper
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=DRM helpers for display adapters drivers
+-  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm-kms-helper
+-  KCONFIG:=CONFIG_DRM_DISPLAY_HELPER
+-  FILES:=$(LINUX_DIR)/drivers/gpu/drm/display/drm_display_helper.ko
+-  AUTOLOAD:=$(call AutoProbe,drm_display_helper)
+-endef
+-
+-define KernelPackage/drm-display-helper/description
+-  DRM helpers for display adapters drivers.
+-endef
+-
+-$(eval $(call KernelPackage,drm-display-helper))
+-
+-define KernelPackage/drm-exec
+-  SUBMENU:=$(VIDEO_MENU)
+-  HIDDEN:=1
+-  TITLE:=Execution context for command submissions
+-  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm
+-  KCONFIG:=CONFIG_DRM_EXEC
+-  FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm_exec.ko
+-  AUTOLOAD:=$(call AutoProbe,drm_exec)
+-endef
+-
+-define KernelPackage/drm-exec/description
+-  Execution context for command submissions.
+-endef
+-
+-$(eval $(call KernelPackage,drm-exec))
+-
+-define KernelPackage/drm-ttm
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=GPU memory management subsystem
+-  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm
+-  KCONFIG:=CONFIG_DRM_TTM
+-  FILES:=$(LINUX_DIR)/drivers/gpu/drm/ttm/ttm.ko
+-  AUTOLOAD:=$(call AutoProbe,ttm)
+-endef
+-
+-define KernelPackage/drm-ttm/description
+-  GPU memory management subsystem for devices with multiple GPU memory types.
+-  Will be enabled automatically if a device driver uses it.
+-endef
+-
+-$(eval $(call KernelPackage,drm-ttm))
+-
+-
+-define KernelPackage/drm-ttm-helper
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Helpers for ttm-based gem objects
+-  HIDDEN:=1
+-  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm-ttm
+-  KCONFIG:=CONFIG_DRM_TTM_HELPER
+-  FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm_ttm_helper.ko
+-  AUTOLOAD:=$(call AutoProbe,drm_ttm_helper)
+-endef
+-
+-$(eval $(call KernelPackage,drm-ttm-helper))
+-
+-
+-define KernelPackage/drm-kms-helper
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=CRTC helpers for KMS drivers
+-  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm +kmod-fb +kmod-fb-sys-fops +kmod-fb-cfb-copyarea \
+-	+kmod-fb-cfb-fillrect +kmod-fb-cfb-imgblt +kmod-fb-sys-ram
+-  KCONFIG:= \
+-    CONFIG_DRM_KMS_HELPER \
+-    CONFIG_DRM_KMS_FB_HELPER=y
+-  FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm_kms_helper.ko
+-  AUTOLOAD:=$(call AutoProbe,drm_kms_helper)
+-endef
+-
+-define KernelPackage/drm-kms-helper/description
+-  CRTC helpers for KMS drivers.
+-endef
+-
+-$(eval $(call KernelPackage,drm-kms-helper))
+-
+-define KernelPackage/drm-suballoc-helper
+-  SUBMENU:=$(VIDEO_MENU)
+-  HIDDEN:=1
+-  TITLE:=DRM suballocation helper
+-  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm
+-  KCONFIG:=CONFIG_DRM_SUBALLOC_HELPER
+-  FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm_suballoc_helper.ko
+-  AUTOLOAD:=$(call AutoProbe,drm_suballoc_helper)
+-endef
+-
+-define KernelPackage/drm-suballoc-helper/description
+-  DRM suballocation helper.
+-endef
+-
+-$(eval $(call KernelPackage,drm-suballoc-helper))
+-
+-define KernelPackage/drm-amdgpu
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=AMDGPU DRM support
+-  DEPENDS:=@TARGET_x86||TARGET_loongarch64 @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-ttm \
+-	+kmod-drm-ttm-helper +kmod-drm-kms-helper +kmod-i2c-algo-bit +amdgpu-firmware \
+-	+kmod-drm-display-helper +kmod-drm-buddy +kmod-acpi-video \
+-	+kmod-drm-exec +kmod-drm-suballoc-helper
+-  KCONFIG:=CONFIG_DRM_AMDGPU \
+-	CONFIG_DRM_AMDGPU_SI=y \
+-	CONFIG_DRM_AMDGPU_CIK=y \
+-	CONFIG_DRM_AMD_DC=y \
+-	CONFIG_DEBUG_KERNEL_DC=n
+-  FILES:=$(LINUX_DIR)/drivers/gpu/drm/amd/amdgpu/amdgpu.ko \
+-	$(LINUX_DIR)/drivers/gpu/drm/scheduler/gpu-sched.ko \
+-	$(LINUX_DIR)/drivers/gpu/drm/amd/amdxcp/amdxcp.ko
+-  AUTOLOAD:=$(call AutoProbe,amdgpu)
+-endef
+-
+-define KernelPackage/drm-amdgpu/description
+-  Direct Rendering Manager (DRM) support for AMDGPU Cards
+-endef
+-
+-define KernelPackage/drm-amdgpu/loongarch64
+-  KCONFIG+=CONFIG_DRM_AMDGPU_USERPTR=y \
+-	CONFIG_DRM_AMD_DC=y \
+-	CONFIG_DRM_AMD_DC_FP=y \
+-	CONFIG_DRM_AMD_DC_SI=y
+-endef
+-
+-$(eval $(call KernelPackage,drm-amdgpu))
+-
+-
+-define KernelPackage/drm-imx
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Freescale i.MX DRM support
+-  DEPENDS:=@TARGET_imx +kmod-drm-kms-helper
+-  KCONFIG:=CONFIG_DRM_IMX \
+-	CONFIG_DRM_FBDEV_EMULATION=y \
+-	CONFIG_DRM_FBDEV_OVERALLOC=100 \
+-	CONFIG_IMX_IPUV3_CORE \
+-	CONFIG_RESET_CONTROLLER=y \
+-	CONFIG_DRM_IMX_IPUV3 \
+-	CONFIG_IMX_IPUV3 \
+-	CONFIG_DRM_GEM_CMA_HELPER=y \
+-	CONFIG_DRM_KMS_CMA_HELPER=y \
+-	CONFIG_DRM_IMX_FB_HELPER \
+-	CONFIG_DRM_IMX_PARALLEL_DISPLAY=n \
+-	CONFIG_DRM_IMX_TVE=n \
+-	CONFIG_DRM_IMX_LDB=n \
+-	CONFIG_DRM_IMX_HDMI=n
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/gpu/drm/imx/ipuv3/imxdrm.ko \
+-	$(LINUX_DIR)/drivers/gpu/drm/drm_dma_helper.ko \
+-	$(LINUX_DIR)/drivers/gpu/ipu-v3/imx-ipu-v3.ko
+-  AUTOLOAD:=$(call AutoLoad,08,imxdrm imx-ipu-v3 imx-ipuv3-crtc)
+-endef
+-
+-define KernelPackage/drm-imx/description
+-  Direct Rendering Manager (DRM) support for Freescale i.MX
+-endef
+-
+-$(eval $(call KernelPackage,drm-imx))
+-
+-define KernelPackage/drm-imx-hdmi
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Freescale i.MX HDMI DRM support
+-  DEPENDS:=+kmod-sound-core kmod-drm-imx kmod-drm-display-helper
+-  KCONFIG:=CONFIG_DRM_IMX_HDMI \
+-	CONFIG_DRM_DW_HDMI_AHB_AUDIO \
+-	CONFIG_DRM_DW_HDMI_I2S_AUDIO
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi.ko \
+-	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.ko \
+-	$(LINUX_DIR)/drivers/gpu/drm/imx/ipuv3/dw_hdmi-imx.ko
+-  AUTOLOAD:=$(call AutoLoad,08,dw-hdmi dw-hdmi-ahb-audio.ko dw_hdmi-imx)
+-endef
+-
+-define KernelPackage/drm-imx-hdmi/description
+-  Direct Rendering Manager (DRM) support for Freescale i.MX HDMI
+-endef
+-
+-$(eval $(call KernelPackage,drm-imx-hdmi))
+-
+-define KernelPackage/drm-imx-ldb
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Freescale i.MX LVDS DRM support
+-  DEPENDS:=@(TARGET_imx&&TARGET_imx_cortexa9) +kmod-backlight kmod-drm-imx
+-  KCONFIG:=CONFIG_DRM_IMX_LDB \
+-	CONFIG_DRM_PANEL_SIMPLE \
+-	CONFIG_DRM_PANEL=y \
+-	CONFIG_DRM_PANEL_SAMSUNG_LD9040=n \
+-	CONFIG_DRM_PANEL_SAMSUNG_S6E8AA0=n \
+-	CONFIG_DRM_PANEL_LG_LG4573=n \
+-	CONFIG_DRM_PANEL_LD9040=n \
+-	CONFIG_DRM_PANEL_LVDS=n \
+-	CONFIG_DRM_PANEL_S6E8AA0=n \
+-	CONFIG_DRM_PANEL_SITRONIX_ST7789V=n
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/gpu/drm/imx/ipuv3/imx-ldb.ko \
+-	$(LINUX_DIR)/drivers/gpu/drm/panel/panel-simple.ko
+-  AUTOLOAD:=$(call AutoLoad,08,imx-ldb)
+-endef
+-
+-define KernelPackage/drm-imx-ldb/description
+-  Direct Rendering Manager (DRM) support for Freescale i.MX LVDS
+-endef
+-
+-$(eval $(call KernelPackage,drm-imx-ldb))
+-
+-define KernelPackage/drm-radeon
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Radeon DRM support
+-  DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-kms-helper \
+-	+kmod-drm-ttm +kmod-drm-ttm-helper +kmod-i2c-algo-bit +radeon-firmware \
+-	+kmod-drm-display-helper +kmod-acpi-video +kmod-drm-suballoc-helper
+-  KCONFIG:=CONFIG_DRM_RADEON
+-  FILES:=$(LINUX_DIR)/drivers/gpu/drm/radeon/radeon.ko
+-  AUTOLOAD:=$(call AutoProbe,radeon)
+-endef
+-
+-define KernelPackage/drm-radeon/description
+-  Direct Rendering Manager (DRM) support for Radeon Cards
+-endef
+-
+-$(eval $(call KernelPackage,drm-radeon))
+-
+-#
+-# Video Capture
+-#
+-
+-define KernelPackage/video-core
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE=Video4Linux support
+-  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core
+-  KCONFIG:= \
+-	CONFIG_MEDIA_SUPPORT \
+-	CONFIG_MEDIA_CAMERA_SUPPORT=y \
+-	CONFIG_VIDEO_DEV \
+-	CONFIG_V4L_PLATFORM_DRIVERS=y \
+-	CONFIG_MEDIA_PLATFORM_DRIVERS=y
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/videodev.ko
+-  AUTOLOAD:=$(call AutoLoad,60,videodev)
+-endef
+-
+-define KernelPackage/video-core/description
+- Kernel modules for Video4Linux support
+-endef
+-
+-$(eval $(call KernelPackage,video-core))
+-
+-
+-define AddDepends/video
+-  SUBMENU:=$(VIDEO_MENU)
+-  DEPENDS+=kmod-video-core $(1)
+-endef
+-
+-define AddDepends/camera
+-$(AddDepends/video)
+-  KCONFIG+=CONFIG_MEDIA_USB_SUPPORT=y \
+-	 CONFIG_MEDIA_CAMERA_SUPPORT=y
+-endef
+-
+-define AddDepends/framegrabber
+-$(AddDepends/video)
+-  KCONFIG+=CONFIG_MEDIA_PCI_SUPPORT=y
+-endef
+-
+-define KernelPackage/video-videobuf2
+-  TITLE:=videobuf2 lib
+-  DEPENDS:=+kmod-dma-buf
+-  KCONFIG:= \
+-	CONFIG_VIDEOBUF2_CORE \
+-	CONFIG_VIDEOBUF2_MEMOPS \
+-	CONFIG_VIDEOBUF2_V4L2 \
+-	CONFIG_VIDEOBUF2_VMALLOC
+-  FILES:= \
+-	$(LINUX_DIR)/drivers/media/common/videobuf2/videobuf2-common.ko \
+-	$(LINUX_DIR)/drivers/media/common/videobuf2/videobuf2-v4l2.ko \
+-	$(LINUX_DIR)/drivers/media/common/videobuf2/videobuf2-memops.ko \
+-	$(LINUX_DIR)/drivers/media/common/videobuf2/videobuf2-vmalloc.ko
+-  AUTOLOAD:=$(call AutoLoad,65,videobuf2-core videobuf-v4l2 videobuf2-memops videobuf2-vmalloc)
+-  $(call AddDepends/video)
+-endef
+-
+-define KernelPackage/video-videobuf2/description
+- Kernel modules that implements three basic types of media buffers.
+-endef
+-
+-$(eval $(call KernelPackage,video-videobuf2))
+-
+-
+-define KernelPackage/video-cpia2
+-  TITLE:=CPIA2 video driver
+-  DEPENDS:=@USB_SUPPORT
+-  KCONFIG:=CONFIG_VIDEO_CPIA2
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/cpia2/cpia2.ko
+-  AUTOLOAD:=$(call AutoProbe,cpia2)
+-  $(call AddDepends/camera)
+-endef
+-
+-define KernelPackage/video-cpia2/description
+- Kernel modules for supporting CPIA2 USB based cameras
+-endef
+-
+-$(eval $(call KernelPackage,video-cpia2))
+-
+-
+-define KernelPackage/video-pwc
+-  TITLE:=Philips USB webcam support
+-  DEPENDS:=@USB_SUPPORT +kmod-usb-core +kmod-video-videobuf2
+-  KCONFIG:= \
+-	CONFIG_USB_PWC \
+-	CONFIG_USB_PWC_DEBUG=n
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/pwc/pwc.ko
+-  AUTOLOAD:=$(call AutoProbe,pwc)
+-  $(call AddDepends/camera)
+-endef
+-
+-define KernelPackage/video-pwc/description
+- Kernel modules for supporting Philips USB based cameras
+-endef
+-
+-$(eval $(call KernelPackage,video-pwc))
+-
+-
+-define KernelPackage/video-uvc
+-  TITLE:=USB Video Class (UVC) support
+-  DEPENDS:=@USB_SUPPORT +kmod-usb-core +kmod-video-videobuf2 +kmod-input-core
+-  KCONFIG:= CONFIG_USB_VIDEO_CLASS CONFIG_UVC_COMMON
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/uvc/uvcvideo.ko \
+-	$(LINUX_DIR)/drivers/media/common/uvc.ko
+-  AUTOLOAD:=$(call AutoProbe,uvc uvcvideo)
+-  $(call AddDepends/camera)
+-endef
+-
+-define KernelPackage/video-uvc/description
+- Kernel modules for supporting USB Video Class (UVC) devices
+-endef
+-
+-$(eval $(call KernelPackage,video-uvc))
+-
+-
+-define KernelPackage/video-gspca-core
+-  MENU:=1
+-  TITLE:=GSPCA webcam core support framework
+-  DEPENDS:=@USB_SUPPORT +kmod-usb-core +kmod-input-core +kmod-video-videobuf2
+-  KCONFIG:=CONFIG_USB_GSPCA
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_main.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_main)
+-  $(call AddDepends/camera)
+-endef
+-
+-define KernelPackage/video-gspca-core/description
+- Kernel modules for supporting GSPCA based webcam devices. Note this is just
+- the core of the driver, please select a submodule that supports your webcam.
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-core))
+-
+-
+-define AddDepends/camera-gspca
+-  SUBMENU:=$(VIDEO_MENU)
+-  DEPENDS+=kmod-video-gspca-core $(1)
+-endef
+-
+-
+-define KernelPackage/video-gspca-conex
+-  TITLE:=conex webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_CONEX
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_conex.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_conex)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-conex/description
+- The Conexant Camera Driver (conex) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-conex))
+-
+-
+-define KernelPackage/video-gspca-etoms
+-  TITLE:=etoms webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_ETOMS
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_etoms.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_etoms)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-etoms/description
+- The Etoms USB Camera Driver (etoms) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-etoms))
+-
+-
+-define KernelPackage/video-gspca-finepix
+-  TITLE:=finepix webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_FINEPIX
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_finepix.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_finepix)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-finepix/description
+- The Fujifilm FinePix USB V4L2 driver (finepix) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-finepix))
+-
+-
+-define KernelPackage/video-gspca-mars
+-  TITLE:=mars webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_MARS
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_mars.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_mars)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-mars/description
+- The Mars USB Camera Driver (mars) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-mars))
+-
+-
+-define KernelPackage/video-gspca-mr97310a
+-  TITLE:=mr97310a webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_MR97310A
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_mr97310a.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_mr97310a)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-mr97310a/description
+- The Mars-Semi MR97310A USB Camera Driver (mr97310a) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-mr97310a))
+-
+-
+-define KernelPackage/video-gspca-ov519
+-  TITLE:=ov519 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_OV519
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_ov519.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_ov519)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-ov519/description
+- The OV519 USB Camera Driver (ov519) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-ov519))
+-
+-
+-define KernelPackage/video-gspca-ov534
+-  TITLE:=ov534 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_OV534
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_ov534.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_ov534)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-ov534/description
+- The OV534 USB Camera Driver (ov534) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-ov534))
+-
+-
+-define KernelPackage/video-gspca-ov534-9
+-  TITLE:=ov534-9 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_OV534_9
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_ov534_9.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_ov534_9)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-ov534-9/description
+- The OV534-9 USB Camera Driver (ov534_9) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-ov534-9))
+-
+-
+-define KernelPackage/video-gspca-pac207
+-  TITLE:=pac207 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_PAC207
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_pac207.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_pac207)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-pac207/description
+- The Pixart PAC207 USB Camera Driver (pac207) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-pac207))
+-
+-
+-define KernelPackage/video-gspca-pac7302
+-  TITLE:=pac7302 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_PAC7302
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_pac7302.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_pac7302)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-pac7302/description
+- The Pixart PAC7302 USB Camera Driver (pac7302) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-pac7302))
+-
+-
+-define KernelPackage/video-gspca-pac7311
+-  TITLE:=pac7311 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_PAC7311
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_pac7311.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_pac7311)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-pac7311/description
+- The Pixart PAC7311 USB Camera Driver (pac7311) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-pac7311))
+-
+-
+-define KernelPackage/video-gspca-se401
+-  TITLE:=se401 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SE401
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_se401.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_se401)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-se401/description
+- The SE401 USB Camera Driver kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-se401))
+-
+-
+-define KernelPackage/video-gspca-sn9c20x
+-  TITLE:=sn9c20x webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SN9C20X
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_sn9c20x.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_sn9c20x)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-sn9c20x/description
+- The SN9C20X USB Camera Driver (sn9c20x) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-sn9c20x))
+-
+-
+-define KernelPackage/video-gspca-sonixb
+-  TITLE:=sonixb webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SONIXB
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_sonixb.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_sonixb)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-sonixb/description
+- The SONIX Bayer USB Camera Driver (sonixb) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-sonixb))
+-
+-
+-define KernelPackage/video-gspca-sonixj
+-  TITLE:=sonixj webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SONIXJ
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_sonixj.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_sonixj)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-sonixj/description
+- The SONIX JPEG USB Camera Driver (sonixj) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-sonixj))
+-
+-
+-define KernelPackage/video-gspca-spca500
+-  TITLE:=spca500 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SPCA500
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_spca500.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_spca500)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-spca500/description
+- The SPCA500 USB Camera Driver (spca500) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-spca500))
+-
+-
+-define KernelPackage/video-gspca-spca501
+-  TITLE:=spca501 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SPCA501
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_spca501.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_spca501)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-spca501/description
+- The SPCA501 USB Camera Driver (spca501) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-spca501))
+-
+-
+-define KernelPackage/video-gspca-spca505
+-  TITLE:=spca505 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SPCA505
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_spca505.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_spca505)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-spca505/description
+- The SPCA505 USB Camera Driver (spca505) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-spca505))
+-
+-
+-define KernelPackage/video-gspca-spca506
+-  TITLE:=spca506 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SPCA506
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_spca506.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_spca506)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-spca506/description
+- The SPCA506 USB Camera Driver (spca506) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-spca506))
+-
+-
+-define KernelPackage/video-gspca-spca508
+-  TITLE:=spca508 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SPCA508
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_spca508.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_spca508)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-spca508/description
+- The SPCA508 USB Camera Driver (spca508) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-spca508))
+-
+-
+-define KernelPackage/video-gspca-spca561
+-  TITLE:=spca561 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SPCA561
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_spca561.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_spca561)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-spca561/description
+- The SPCA561 USB Camera Driver (spca561) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-spca561))
+-
+-
+-define KernelPackage/video-gspca-sq905
+-  TITLE:=sq905 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SQ905
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_sq905.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_sq905)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-sq905/description
+- The SQ Technologies SQ905 based USB Camera Driver (sq905) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-sq905))
+-
+-
+-define KernelPackage/video-gspca-sq905c
+-  TITLE:=sq905c webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SQ905C
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_sq905c.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_sq905c)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-sq905c/description
+- The SQ Technologies SQ905C based USB Camera Driver (sq905c) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-sq905c))
+-
+-
+-define KernelPackage/video-gspca-sq930x
+-  TITLE:=sq930x webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SQ930X
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_sq930x.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_sq930x)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-sq930x/description
+- The SQ Technologies SQ930X based USB Camera Driver (sq930x) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-sq930x))
+-
+-
+-define KernelPackage/video-gspca-stk014
+-  TITLE:=stk014 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_STK014
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_stk014.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_stk014)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-stk014/description
+- The Syntek DV4000 (STK014) USB Camera Driver (stk014) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-stk014))
+-
+-
+-define KernelPackage/video-gspca-sunplus
+-  TITLE:=sunplus webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_SUNPLUS
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_sunplus.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_sunplus)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-sunplus/description
+- The SUNPLUS USB Camera Driver (sunplus) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-sunplus))
+-
+-
+-define KernelPackage/video-gspca-t613
+-  TITLE:=t613 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_T613
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_t613.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_t613)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-t613/description
+- The T613 (JPEG Compliance) USB Camera Driver (t613) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-t613))
+-
+-
+-define KernelPackage/video-gspca-tv8532
+-  TITLE:=tv8532 webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_TV8532
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_tv8532.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_tv8532)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-tv8532/description
+- The TV8532 USB Camera Driver (tv8532) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-tv8532))
+-
+-
+-define KernelPackage/video-gspca-vc032x
+-  TITLE:=vc032x webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_VC032X
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_vc032x.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_vc032x)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-vc032x/description
+- The VC032X USB Camera Driver (vc032x) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-vc032x))
+-
+-
+-define KernelPackage/video-gspca-zc3xx
+-  TITLE:=zc3xx webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_ZC3XX
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_zc3xx.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_zc3xx)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-zc3xx/description
+- The ZC3XX USB Camera Driver (zc3xx) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-zc3xx))
+-
+-
+-define KernelPackage/video-gspca-m5602
+-  TITLE:=m5602 webcam support
+-  KCONFIG:=CONFIG_USB_M5602
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/m5602/gspca_m5602.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_m5602)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-m5602/description
+- The ALi USB m5602 Camera Driver (m5602) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-m5602))
+-
+-
+-define KernelPackage/video-gspca-stv06xx
+-  TITLE:=stv06xx webcam support
+-  KCONFIG:=CONFIG_USB_STV06XX
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/stv06xx/gspca_stv06xx.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_stv06xx)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-stv06xx/description
+- The STV06XX USB Camera Driver (stv06xx) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-stv06xx))
+-
+-
+-define KernelPackage/video-gspca-gl860
+-  TITLE:=gl860 webcam support
+-  KCONFIG:=CONFIG_USB_GL860
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gl860/gspca_gl860.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_gl860)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-gl860/description
+- The GL860 USB Camera Driver (gl860) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-gl860))
+-
+-
+-define KernelPackage/video-gspca-jeilinj
+-  TITLE:=jeilinj webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_JEILINJ
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_jeilinj.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_jeilinj)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-jeilinj/description
+- The JEILINJ USB Camera Driver (jeilinj) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-jeilinj))
+-
+-
+-define KernelPackage/video-gspca-konica
+-  TITLE:=konica webcam support
+-  KCONFIG:=CONFIG_USB_GSPCA_KONICA
+-  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_USB_DIR)/gspca/gspca_konica.ko
+-  AUTOLOAD:=$(call AutoProbe,gspca_konica)
+-  $(call AddDepends/camera-gspca)
+-endef
+-
+-define KernelPackage/video-gspca-konica/description
+- The Konica USB Camera Driver (konica) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-gspca-konica))
+-
+-#
+-# Video Processing
+-#
+-
+-define KernelPackage/video-mem2mem
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Memory 2 Memory device support
+-  HIDDEN:=1
+-  DEPENDS:=+kmod-video-videobuf2
+-  KCONFIG:= \
+-    CONFIG_V4L_MEM2MEM_DRIVERS=y \
+-    CONFIG_V4L2_MEM2MEM_DEV
+-  FILES:= $(LINUX_DIR)/drivers/media/$(V4L2_DIR)/v4l2-mem2mem.ko
+-  AUTOLOAD:=$(call AutoLoad,66,v4l2-mem2mem)
+-  $(call AddDepends/video)
+-endef
+-
+-define KernelPackage/video-mem2mem/description
+-  Memory 2 memory device support
+-endef
+-
+-$(eval $(call KernelPackage,video-mem2mem))
+-
+-define KernelPackage/video-dma-contig
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Video DMA support
+-  HIDDEN:=1
+-  DEPENDS:=+kmod-video-videobuf2
+-  KCONFIG:=CONFIG_VIDEOBUF2_DMA_CONTIG
+-  FILES:=$(LINUX_DIR)/drivers/media/common/videobuf2/videobuf2-dma-contig.ko
+-  AUTOLOAD:=$(call AutoLoad,66,videobuf2-dma-contig)
+-  $(call AddDepends/video)
+-endef
+-
+-define KernelPackage/video-dma-contig/description
+-  Video DMA support Contig
+-endef
+-
+-
+-$(eval $(call KernelPackage,video-dma-contig))
+-
+-define KernelPackage/video-dma-sg
+-  SUBMENU:=$(VIDEO_MENU)
+-  TITLE:=Video DMA support
+-  HIDDEN:=1
+-  DEPENDS:=+kmod-video-videobuf2
+-  KCONFIG:=CONFIG_VIDEOBUF2_DMA_SG
+-  FILES:=$(LINUX_DIR)/drivers/media/common/videobuf2/videobuf2-dma-sg.ko
+-  AUTOLOAD:=$(call AutoLoad,66,videobuf2-dma-sg)
+-  $(call AddDepends/video)
+-endef
+-
+-define KernelPackage/video-dma-sg/description
+-  Video DMA support SG
+-endef
+-
+-$(eval $(call KernelPackage,video-dma-sg))
+-
+-define KernelPackage/video-coda
+-  TITLE:=i.MX VPU support
+-  DEPENDS:=@(TARGET_imx&&TARGET_imx_cortexa9) +kmod-video-mem2mem +kmod-video-dma-contig
+-  KCONFIG:= \
+-  	CONFIG_VIDEO_CODA \
+-  	CONFIG_VIDEO_IMX_VDOA
+-  FILES:= \
+-  	$(LINUX_DIR)/drivers/media/$(V4L2_MEM2MEM_DIR)/chips-media/coda-vpu.ko \
+-  	$(LINUX_DIR)/drivers/media/$(V4L2_MEM2MEM_DIR)/chips-media/imx-vdoa.ko \
+- 	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/v4l2-jpeg.ko
+-  AUTOLOAD:=$(call AutoProbe,coda-vpu imx-vdoa v4l2-jpeg)
+-  $(call AddDepends/video)
+-endef
+-
+-define KernelPackage/video-coda/description
+- The i.MX Video Processing Unit (VPU) kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-coda))
+-
+-define KernelPackage/video-pxp
+-  TITLE:=i.MX PXP support
+-  DEPENDS:=@TARGET_imx +kmod-video-mem2mem +kmod-video-dma-contig
+-  KCONFIG:= CONFIG_VIDEO_IMX_PXP
+-  FILES:= $(LINUX_DIR)/drivers/media/platform/nxp/imx-pxp.ko
+-  AUTOLOAD:=$(call AutoProbe,imx-pxp)
+-  $(call AddDepends/video)
+-endef
+-
+-define KernelPackage/video-pxp/description
+- The i.MX Pixel Pipeline (PXP) kernel module
+- This enables hardware accelerated support for image
+- Colour Conversion, Scaling and Rotation
+-endef
+-
+-$(eval $(call KernelPackage,video-pxp))
+-
+-define KernelPackage/video-tw686x
+-  TITLE:=TW686x support
+-  DEPENDS:=@PCIE_SUPPORT +kmod-video-dma-contig +kmod-video-dma-sg +kmod-sound-core
+-  KCONFIG:= CONFIG_VIDEO_TW686X
+-  FILES:= $(LINUX_DIR)/drivers/media/pci/tw686x/tw686x.ko
+-  AUTOLOAD:=$(call AutoProbe,tw686x)
+-  MODPARAMS.tw686x:=dma_mode=contig
+-  $(call AddDepends/framegrabber)
+-endef
+-
+-define KernelPackage/video-tw686x/description
+- The Intersil/Techwell TW686x kernel module
+-endef
+-
+-$(eval $(call KernelPackage,video-tw686x))
+diff --git a/package/kernel/linux/modules/w1.mk b/package/kernel/linux/modules/w1.mk
+index 9cba28d..d9eaa6b 100644
+--- a/package/kernel/linux/modules/w1.mk
++++ b/package/kernel/linux/modules/w1.mk
+@@ -5,172 +5,3 @@
+ # See /LICENSE for more information.
+ #
+ 
+-W1_MENU:=W1 support
+-W1_MASTERS_DIR:=$(LINUX_DIR)/drivers/w1/masters
+-W1_SLAVES_DIR:=$(LINUX_DIR)/drivers/w1/slaves
+-
+-define KernelPackage/w1
+-  SUBMENU:=$(W1_MENU)
+-  TITLE:=Dallas's 1-wire support
+-  KCONFIG:=CONFIG_W1
+-  FILES:=$(LINUX_DIR)/drivers/w1/wire.ko
+-  DEPENDS:=+kmod-hwmon-core
+-endef
+-
+-define KernelPackage/w1/description
+- Kernel module for Dallas's 1-wire support
+-endef
+-
+-$(eval $(call KernelPackage,w1))
+-
+-
+-define AddDepends/w1
+-  SUBMENU:=$(W1_MENU)
+-  DEPENDS+=kmod-w1 $(1)
+-endef
+-
+-
+-#
+-# 1-wire masters
+-#
+-define KernelPackage/w1-master-gpio
+-  TITLE:=GPIO 1-wire bus master driver
+-  DEPENDS:=@GPIO_SUPPORT
+-  KCONFIG:=CONFIG_W1_MASTER_GPIO
+-  FILES:=$(W1_MASTERS_DIR)/w1-gpio.ko
+-  AUTOLOAD:=$(call AutoProbe,w1-gpio)
+-  $(call AddDepends/w1)
+-endef
+-
+-define KernelPackage/w1-master-gpio/description
+- Kernel module for the GPIO 1-wire bus master driver
+-endef
+-
+-$(eval $(call KernelPackage,w1-master-gpio))
+-
+-define KernelPackage/w1-master-ds2482
+-  TITLE:=DS2482 1-wire i2c bus master driver
+-  KCONFIG:=CONFIG_W1_MASTER_DS2482
+-  FILES:=$(W1_MASTERS_DIR)/ds2482.ko
+-  AUTOLOAD:=$(call AutoProbe,ds2482)
+-  $(call AddDepends/w1,+kmod-i2c-core)
+-endef
+-
+-define KernelPackage/w1-master-ds2482/description
+- Kernel module for the DS2482 i2c 1-wire bus master driver
+- NOTE: Init with: echo ds2482 0x18 > /sys/bus/i2c/devices/i2c-0/new_device
+- or use owfs
+-endef
+-
+-$(eval $(call KernelPackage,w1-master-ds2482))
+-
+-
+-define KernelPackage/w1-master-ds2490
+-  TITLE:=DS2490 1-wire usb bus master driver
+-  DEPENDS:=@USB_SUPPORT +kmod-usb-core
+-  KCONFIG:=CONFIG_W1_MASTER_DS2490
+-  FILES:=$(W1_MASTERS_DIR)/ds2490.ko
+-  AUTOLOAD:=$(call AutoProbe,ds2490)
+-  $(call AddDepends/w1)
+-endef
+-
+-define KernelPackage/w1-master-ds2490/description
+- Kernel module for the DS2490 usb 1-wire bus master driver
+-endef
+-
+-$(eval $(call KernelPackage,w1-master-ds2490))
+-
+-
+-define KernelPackage/w1-master-mxc
+-  TITLE:=Freescale MXC 1-wire busmaster
+-  DEPENDS:=@TARGET_imx
+-  KCONFIG:=CONFIG_W1_MASTER_MXC
+-  FILES:=$(W1_MASTERS_DIR)/mxc_w1.ko
+-  AUTOLOAD:=$(call AutoProbe,mxc_w1)
+-  $(call AddDepends/w1)
+-endef
+-
+-define KernelPackage/w1-master-mxc/description
+- Kernel module for 1-wire Freescale MXC 1-wire busmaster
+-endef
+-
+-$(eval $(call KernelPackage,w1-master-mxc))
+-
+-
+-#
+-# 1-wire slaves
+-#
+-define KernelPackage/w1-slave-therm
+-  TITLE:=Thermal family implementation
+-  KCONFIG:=CONFIG_W1_SLAVE_THERM
+-  FILES:=$(W1_SLAVES_DIR)/w1_therm.ko
+-  AUTOLOAD:=$(call AutoProbe,w1_therm)
+-  $(call AddDepends/w1)
+-endef
+-
+-define KernelPackage/w1-slave-therm/description
+- Kernel module for 1-wire thermal sensors
+-endef
+-
+-$(eval $(call KernelPackage,w1-slave-therm))
+-
+-
+-define KernelPackage/w1-slave-smem
+-  TITLE:=Simple 64bit memory family implementation
+-  KCONFIG:=CONFIG_W1_SLAVE_SMEM
+-  FILES:=$(W1_SLAVES_DIR)/w1_smem.ko
+-  AUTOLOAD:=$(call AutoProbe,w1_smem)
+-  $(call AddDepends/w1)
+-endef
+-
+-define KernelPackage/w1-slave-smem/description
+- Kernel module for 1-wire simple 64bit memory rom(ds2401/ds2411/ds1990*)
+-endef
+-
+-$(eval $(call KernelPackage,w1-slave-smem))
+-
+-define KernelPackage/w1-slave-ds2431
+-  TITLE:=DS2431 1kb EEPROM driver
+-  KCONFIG:= CONFIG_W1_SLAVE_DS2431
+-  FILES:=$(W1_SLAVES_DIR)/w1_ds2431.ko
+-  AUTOLOAD:=$(call AutoProbe,w1_ds2431)
+-  $(call AddDepends/w1)
+-endef
+-
+-define KernelPackage/w1-slave-ds2431/description
+- Kernel module for 1-wire 1kb EEPROM (DS2431)
+-endef
+-
+-$(eval $(call KernelPackage,w1-slave-ds2431))
+-
+-define KernelPackage/w1-slave-ds2433
+-  TITLE:=DS2433 4kb EEPROM driver
+-  KCONFIG:= \
+-	CONFIG_W1_SLAVE_DS2433 \
+-	CONFIG_W1_SLAVE_DS2433_CRC=n
+-  FILES:=$(W1_SLAVES_DIR)/w1_ds2433.ko
+-  AUTOLOAD:=$(call AutoProbe,w1_ds2433)
+-  $(call AddDepends/w1)
+-endef
+-
+-define KernelPackage/w1-slave-ds2433/description
+- Kernel module for 1-wire 4kb EEPROM (DS2433)
+-endef
+-
+-$(eval $(call KernelPackage,w1-slave-ds2433))
+-
+-
+-define KernelPackage/w1-slave-ds2413
+-  TITLE:=DS2413 2 Ch. Addressable Switch
+-  KCONFIG:= \
+-	CONFIG_W1_SLAVE_DS2413
+-  FILES:=$(W1_SLAVES_DIR)/w1_ds2413.ko
+-  AUTOLOAD:=$(call AutoProbe,w1_ds2413)
+-  $(call AddDepends/w1)
+-endef
+-
+-define KernelPackage/w1-slave-ds2413/description
+- Kernel module for 1-wire DS2413 Dual Channel Addressable Switch support
+-endef
+-
+-$(eval $(call KernelPackage,w1-slave-ds2413))
+diff --git a/package/kernel/linux/modules/wpan.mk b/package/kernel/linux/modules/wpan.mk
+index dab8a0c..e12d621 100644
+--- a/package/kernel/linux/modules/wpan.mk
++++ b/package/kernel/linux/modules/wpan.mk
+@@ -4,149 +4,3 @@
+ # This is free software, licensed under the GNU General Public License v2.
+ # See /LICENSE for more information.
+ 
+-WPAN_MENU:=WPAN 802.15.4 Support
+-
+-define KernelPackage/ieee802154
+-  SUBMENU:=$(WPAN_MENU)
+-  TITLE:=IEEE-802.15.4 support
+-  KCONFIG:= \
+-	CONFIG_IEEE802154 \
+-	CONFIG_IEEE802154_SOCKET=y \
+-	CONFIG_IEEE802154_NL802154_EXPERIMENTAL=n
+-  FILES:= \
+-	$(LINUX_DIR)/net/ieee802154/ieee802154.ko \
+-	$(LINUX_DIR)/net/ieee802154/ieee802154_socket.ko
+-  AUTOLOAD:=$(call AutoLoad,90,ieee802154 ieee802154_socket)
+-endef
+-
+-define KernelPackage/ieee802154/description
+-  IEEE Std 802.15.4 defines a low data rate, low power and low
+-  complexity short range wireless personal area networks. It was
+-  designed to organise networks of sensors, switches, etc automation
+-  devices. Maximum allowed data rate is 250 kb/s and typical personal
+-  operating space around 10m.
+-endef
+-
+-$(eval $(call KernelPackage,ieee802154))
+-
+-define KernelPackage/mac802154
+-  SUBMENU:=$(WPAN_MENU)
+-  TITLE:=MAC-802.15.4 support
+-  DEPENDS:=+kmod-ieee802154 +kmod-crypto-aead +kmod-lib-crc-ccitt
+-  KCONFIG:= \
+-	CONFIG_MAC802154 \
+-	CONFIG_IEEE802154_DRIVERS=y
+-  FILES:=$(LINUX_DIR)/net/mac802154/mac802154.ko
+-  AUTOLOAD:=$(call AutoLoad,91,mac802154)
+-endef
+-
+-define KernelPackage/mac802154/description
+-  This option enables the hardware independent IEEE 802.15.4
+-  networking stack for SoftMAC devices (the ones implementing
+-  only PHY level of IEEE 802.15.4 standard).
+-
+-  Note: this implementation is neither certified, nor feature
+-  complete! Compatibility with other implementations hasn't
+-  been tested yet!
+-endef
+-
+-$(eval $(call KernelPackage,mac802154))
+-
+-define KernelPackage/fakelb
+-  SUBMENU:=$(WPAN_MENU)
+-  TITLE:=Fake LR-WPAN driver
+-  DEPENDS:=+kmod-mac802154
+-  KCONFIG:=CONFIG_IEEE802154_FAKELB
+-  FILES:=$(LINUX_DIR)/drivers/net/ieee802154/fakelb.ko
+-  AUTOLOAD:=$(call AutoLoad,92,fakelb)
+-endef
+-
+-define KernelPackage/fakelb/description
+-  Say Y here to enable the fake driver that can emulate a net
+-  of several interconnected radio devices.
+-endef
+-
+-$(eval $(call KernelPackage,fakelb))
+-
+-define KernelPackage/atusb
+-  SUBMENU:=$(WPAN_MENU)
+-  TITLE:=ATUSB transceiver driver
+-  DEPENDS:=@USB_SUPPORT +kmod-usb-core +kmod-mac802154
+-  KCONFIG:=CONFIG_IEEE802154_ATUSB
+-  FILES:=$(LINUX_DIR)/drivers/net/ieee802154/atusb.ko
+-  AUTOLOAD:=$(call AutoProbe,atusb)
+-endef
+-
+-$(eval $(call KernelPackage,atusb))
+-
+-define KernelPackage/at86rf230
+-  SUBMENU:=$(WPAN_MENU)
+-  TITLE:=AT86RF230 transceiver driver
+-  DEPENDS:=+kmod-mac802154 +kmod-regmap-spi
+-  KCONFIG:=CONFIG_IEEE802154_AT86RF230 \
+-	CONFIG_IEEE802154_AT86RF230_DEBUGFS=n \
+-	CONFIG_SPI=y \
+-	CONFIG_SPI_MASTER=y
+-  FILES:=$(LINUX_DIR)/drivers/net/ieee802154/at86rf230.ko
+-  AUTOLOAD:=$(call AutoProbe,at86rf230)
+-endef
+-
+-$(eval $(call KernelPackage,at86rf230))
+-
+-define KernelPackage/mrf24j40
+-  SUBMENU:=$(WPAN_MENU)
+-  TITLE:=MRF24J40 transceiver driver
+-  DEPENDS:=+kmod-mac802154 +kmod-regmap-spi
+-  KCONFIG:=CONFIG_IEEE802154_MRF24J40 \
+-	CONFIG_SPI=y \
+-	CONFIG_SPI_MASTER=y
+-  FILES:=$(LINUX_DIR)/drivers/net/ieee802154/mrf24j40.ko
+-  AUTOLOAD:=$(call AutoProbe,mrf24j40)
+-endef
+-
+-$(eval $(call KernelPackage,mrf24j40))
+-
+-define KernelPackage/cc2520
+-  SUBMENU:=$(WPAN_MENU)
+-  TITLE:=CC2520 transceiver driver
+-  DEPENDS:=+kmod-mac802154
+-  KCONFIG:=CONFIG_IEEE802154_CC2520 \
+-	CONFIG_SPI=y \
+-	CONFIG_SPI_MASTER=y
+-  FILES:=$(LINUX_DIR)/drivers/net/ieee802154/cc2520.ko
+-  AUTOLOAD:=$(call AutoProbe,cc2520)
+-endef
+-
+-$(eval $(call KernelPackage,cc2520))
+-
+-
+-define KernelPackage/ca8210
+-  SUBMENU:=$(WPAN_MENU)
+-  TITLE:=CA8210 transceiver driver
+-  DEPENDS:=+kmod-mac802154
+-  KCONFIG:=CONFIG_IEEE802154_CA8210 \
+-	CONFIG_SPI=y \
+-	CONFIG_SPI_MASTER=y \
+-	CONFIG_IEEE802154_CA8210_DEBUGFS=n
+-  FILES:=$(LINUX_DIR)/drivers/net/ieee802154/ca8210.ko
+-  AUTOLOAD:=$(call AutoProbe,ca8210)
+-endef
+-
+-$(eval $(call KernelPackage,ca8210))
+-
+-
+-define KernelPackage/ieee802154-6lowpan
+-  SUBMENU:=$(WPAN_MENU)
+-  TITLE:= 6LoWPAN support over IEEE-802.15.4
+-  DEPENDS:=+kmod-6lowpan +kmod-ieee802154
+-  KCONFIG:=CONFIG_IEEE802154_6LOWPAN
+-  FILES:= \
+-	$(LINUX_DIR)/net/ieee802154/6lowpan/ieee802154_6lowpan.ko
+-  AUTOLOAD:=$(call AutoLoad,91,ieee802154_6lowpan)
+-endef
+-
+-define KernelPackage/ieee802154-6lowpan/description
+- IPv6 compression over IEEE 802.15.4
+-endef
+-
+-$(eval $(call KernelPackage,ieee802154-6lowpan))
+diff --git a/package/kernel/linux/modules/fs.mk b/package/kernel/linux/modules/fs.mk
+index 1fbab8f..c37565a 100644
+--- a/package/kernel/linux/modules/fs.mk
++++ b/package/kernel/linux/modules/fs.mk
+@@ -7,45 +7,6 @@
+ 
+ FS_MENU:=Filesystems
+ 
+-define KernelPackage/fs-9p
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=Plan 9 Resource Sharing Support
+-  DEPENDS:=+kmod-9pnet +kmod-fs-netfs
+-  KCONFIG:=\
+-	CONFIG_9P_FS \
+-	CONFIG_9P_FS_POSIX_ACL=n \
+-	CONFIG_9P_FS_SECURITY=n \
+-	CONFIG_9P_FSCACHE=n
+-  FILES:=$(LINUX_DIR)/fs/9p/9p.ko
+-  AUTOLOAD:=$(call AutoLoad,30,9p)
+-endef
+-
+-define KernelPackage/fs-9p/description
+-  Kernel module for Plan 9 Resource Sharing Support support
+-endef
+-
+-$(eval $(call KernelPackage,fs-9p))
+-
+-
+-define KernelPackage/fs-afs
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=Andrew FileSystem client
+-  DEFAULT:=n
+-  DEPENDS:=+kmod-rxrpc +kmod-dnsresolver +kmod-fs-fscache
+-  KCONFIG:=\
+-	CONFIG_AFS_FS=m \
+-	CONFIG_AFS_DEBUG=n \
+-	CONFIG_AFS_FSCACHE=y
+-  FILES:=$(LINUX_DIR)/fs/afs/kafs.ko
+-  AUTOLOAD:=$(call AutoLoad,30,kafs)
+-endef
+-
+-define KernelPackage/fs-afs/description
+-  Kernel module for Andrew FileSystem client support
+-endef
+-
+-$(eval $(call KernelPackage,fs-afs))
+-
+ define KernelPackage/fs-autofs4
+   SUBMENU:=$(FS_MENU)
+   TITLE:=AUTOFS4 filesystem support
+@@ -136,55 +97,6 @@ endef
+ $(eval $(call KernelPackage,fs-cifs))
+ 
+ 
+-define KernelPackage/fs-configfs
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=Configuration filesystem support
+-  KCONFIG:= \
+-	CONFIG_CONFIGFS_FS
+-  FILES:=$(LINUX_DIR)/fs/configfs/configfs.ko
+-  AUTOLOAD:=$(call AutoLoad,30,configfs)
+-endef
+-
+-define KernelPackage/fs-configfs/description
+- Kernel module for configfs support
+-endef
+-
+-$(eval $(call KernelPackage,fs-configfs))
+-
+-
+-define KernelPackage/fs-cramfs
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=Compressed RAM/ROM filesystem support
+-  DEPENDS:=+kmod-lib-zlib-inflate
+-  KCONFIG:= \
+-	CONFIG_CRAMFS
+-  FILES:=$(LINUX_DIR)/fs/cramfs/cramfs.ko
+-  AUTOLOAD:=$(call AutoLoad,30,cramfs)
+-endef
+-
+-define KernelPackage/fs-cramfs/description
+- Kernel module for cramfs support
+-endef
+-
+-$(eval $(call KernelPackage,fs-cramfs))
+-
+-
+-define KernelPackage/fs-efivarfs
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=efivar filesystem support
+-  KCONFIG:=CONFIG_EFIVAR_FS
+-  FILES:=$(LINUX_DIR)/fs/efivarfs/efivarfs.ko
+-  DEPENDS:=@(x86_64||x86)
+-  AUTOLOAD:=$(call Autoload,90,efivarfs)
+-endef
+-
+-define KernelPackage/fs-efivarfs/description
+-  Kernel module to support efivarfs file system mountpoint.
+-endef
+-
+-$(eval $(call KernelPackage,fs-efivarfs))
+-
+-
+ define KernelPackage/fs-exfat
+   SUBMENU:=$(FS_MENU)
+   TITLE:=exFAT filesystem support
+@@ -203,21 +115,6 @@ endef
+ $(eval $(call KernelPackage,fs-exfat))
+ 
+ 
+-define KernelPackage/fs-exportfs
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=exportfs kernel server support
+-  KCONFIG:=CONFIG_EXPORTFS
+-  FILES=$(LINUX_DIR)/fs/exportfs/exportfs.ko
+-  AUTOLOAD:=$(call AutoLoad,20,exportfs,1)
+-endef
+-
+-define KernelPackage/fs-exportfs/description
+- Kernel module for exportfs. Needed for some other modules.
+-endef
+-
+-$(eval $(call KernelPackage,fs-exportfs))
+-
+-
+ define KernelPackage/fs-ext4
+   SUBMENU:=$(FS_MENU)
+   TITLE:=EXT4 filesystem support
+@@ -283,57 +180,6 @@ endef
+ $(eval $(call KernelPackage,fs-fscache))
+ 
+ 
+-define KernelPackage/fs-hfs
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=HFS filesystem support
+-  DEPENDS:=+kmod-cdrom
+-  KCONFIG:=CONFIG_HFS_FS
+-  FILES:=$(LINUX_DIR)/fs/hfs/hfs.ko
+-  AUTOLOAD:=$(call AutoLoad,30,hfs)
+-  $(call AddDepends/nls)
+-endef
+-
+-define KernelPackage/fs-hfs/description
+- Kernel module for HFS filesystem support
+-endef
+-
+-$(eval $(call KernelPackage,fs-hfs))
+-
+-
+-define KernelPackage/fs-hfsplus
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=HFS+ filesystem support
+-  DEPENDS:=+kmod-cdrom
+-  KCONFIG:=CONFIG_HFSPLUS_FS
+-  FILES:=$(LINUX_DIR)/fs/hfsplus/hfsplus.ko
+-  AUTOLOAD:=$(call AutoLoad,30,hfsplus)
+-  $(call AddDepends/nls,utf8)
+-endef
+-
+-define KernelPackage/fs-hfsplus/description
+- Kernel module for HFS+ filesystem support
+-endef
+-
+-$(eval $(call KernelPackage,fs-hfsplus))
+-
+-
+-define KernelPackage/fs-isofs
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=ISO9660 filesystem support
+-  DEPENDS:=+kmod-lib-zlib-inflate +kmod-cdrom
+-  KCONFIG:=CONFIG_ISO9660_FS CONFIG_JOLIET=y CONFIG_ZISOFS=n
+-  FILES:=$(LINUX_DIR)/fs/isofs/isofs.ko
+-  AUTOLOAD:=$(call AutoLoad,30,isofs)
+-  $(call AddDepends/nls)
+-endef
+-
+-define KernelPackage/fs-isofs/description
+- Kernel module for ISO9660 filesystem support
+-endef
+-
+-$(eval $(call KernelPackage,fs-isofs))
+-
+-
+ define KernelPackage/fs-jfs
+   SUBMENU:=$(FS_MENU)
+   TITLE:=JFS filesystem support
+@@ -387,21 +233,6 @@ endef
+ $(eval $(call KernelPackage,fs-ksmbd))
+ 
+ 
+-define KernelPackage/fs-minix
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=Minix filesystem support
+-  KCONFIG:=CONFIG_MINIX_FS
+-  FILES:=$(LINUX_DIR)/fs/minix/minix.ko
+-  AUTOLOAD:=$(call AutoLoad,30,minix)
+-endef
+-
+-define KernelPackage/fs-minix/description
+- Kernel module for Minix filesystem support
+-endef
+-
+-$(eval $(call KernelPackage,fs-minix))
+-
+-
+ define KernelPackage/fs-msdos
+   SUBMENU:=$(FS_MENU)
+   TITLE:=MSDOS filesystem support
+@@ -430,154 +261,6 @@ endef
+ $(eval $(call KernelPackage,fs-netfs))
+ 
+ 
+-define KernelPackage/fs-nfs
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=NFS filesystem client support
+-  DEPENDS:=+kmod-fs-nfs-common +kmod-dnsresolver
+-  KCONFIG:= \
+-	CONFIG_NFS_FS \
+-	CONFIG_NFS_USE_LEGACY_DNS=n \
+-	CONFIG_NFS_USE_NEW_IDMAPPER=n
+-  FILES:= \
+-	$(LINUX_DIR)/fs/nfs/nfs.ko
+-  AUTOLOAD:=$(call AutoLoad,40,nfs)
+-endef
+-
+-define KernelPackage/fs-nfs/description
+- Kernel module for NFS client support
+-endef
+-
+-$(eval $(call KernelPackage,fs-nfs))
+-
+-
+-define KernelPackage/fs-nfs-common
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=Common NFS filesystem modules
+-  DEPENDS:=+kmod-oid-registry
+-  KCONFIG:= \
+-	CONFIG_LOCKD \
+-	CONFIG_SUNRPC \
+-	CONFIG_GRACE_PERIOD \
+-	CONFIG_NFS_V4=y \
+-	CONFIG_NFS_V4_1=y \
+-	CONFIG_NFS_V4_1_IMPLEMENTATION_ID_DOMAIN="kernel.org" \
+-	CONFIG_NFS_V4_1_MIGRATION=n \
+-	CONFIG_NFS_V4_2=y \
+-	CONFIG_NFS_V4_2_READ_PLUS=n
+-  FILES:= \
+-	$(LINUX_DIR)/fs/lockd/lockd.ko \
+-	$(LINUX_DIR)/net/sunrpc/sunrpc.ko \
+-	$(LINUX_DIR)/fs/nfs_common/grace.ko
+-  AUTOLOAD:=$(call AutoLoad,30,grace sunrpc lockd)
+-endef
+-
+-$(eval $(call KernelPackage,fs-nfs-common))
+-
+-
+-define KernelPackage/fs-nfs-common-rpcsec
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=NFS Secure RPC
+-  DEPENDS:= \
+-	+kmod-fs-nfs-common \
+-	+kmod-crypto-des \
+-	+kmod-crypto-cbc \
+-	+kmod-crypto-cts \
+-	+kmod-crypto-md5 \
+-	+kmod-crypto-sha1 \
+-	+kmod-crypto-hmac \
+-	+kmod-crypto-ecb \
+-	+kmod-crypto-arc4
+-  KCONFIG:= \
+-	CONFIG_SUNRPC_GSS \
+-	CONFIG_RPCSEC_GSS_KRB5
+-  FILES:= \
+-	$(LINUX_DIR)/net/sunrpc/auth_gss/auth_rpcgss.ko \
+-	$(LINUX_DIR)/net/sunrpc/auth_gss/rpcsec_gss_krb5.ko
+-  AUTOLOAD:=$(call AutoLoad,31,auth_rpcgss rpcsec_gss_krb5)
+-endef
+-
+-define KernelPackage/fs-nfs-common-rpcsec/description
+- Kernel modules for NFS Secure RPC
+-endef
+-
+-$(eval $(call KernelPackage,fs-nfs-common-rpcsec))
+-
+-
+-define KernelPackage/fs-nfs-v3
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=NFS3 filesystem client support
+-  DEPENDS:=+kmod-fs-nfs
+-  FILES:= \
+-	$(LINUX_DIR)/fs/nfs/nfsv3.ko
+-  AUTOLOAD:=$(call AutoLoad,41,nfsv3)
+-endef
+-
+-define KernelPackage/fs-nfs-v3/description
+- Kernel module for NFS v3 client support
+-endef
+-
+-$(eval $(call KernelPackage,fs-nfs-v3))
+-
+-
+-define KernelPackage/fs-nfs-v4
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=NFS4 filesystem client support
+-  DEPENDS:=+kmod-fs-nfs
+-  KCONFIG:= \
+-	CONFIG_NFS_V4=y
+-  FILES:= \
+-	$(LINUX_DIR)/fs/nfs/nfsv4.ko
+-  AUTOLOAD:=$(call AutoLoad,41,nfsv4)
+-endef
+-
+-define KernelPackage/fs-nfs-v4/description
+- Kernel module for NFS v4 client support
+-endef
+-
+-$(eval $(call KernelPackage,fs-nfs-v4))
+-
+-
+-define KernelPackage/fs-nfsd
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=NFS kernel server support
+-  DEPENDS:=+kmod-fs-nfs-common +kmod-fs-exportfs +kmod-fs-nfs-common-rpcsec
+-  KCONFIG:= \
+-	CONFIG_NFSD \
+-	CONFIG_NFSD_V4=y \
+-	CONFIG_NFSD_V4_SECURITY_LABEL=n \
+-	CONFIG_NFSD_BLOCKLAYOUT=n \
+-	CONFIG_NFSD_SCSILAYOUT=n \
+-	CONFIG_NFSD_FLEXFILELAYOUT=n \
+-	CONFIG_NFSD_FAULT_INJECTION=n \
+-	CONFIG_NFSD_V4_2_INTER_SSC=n
+-  FILES:=$(LINUX_DIR)/fs/nfsd/nfsd.ko
+-  AUTOLOAD:=$(call AutoLoad,40,nfsd)
+-endef
+-
+-define KernelPackage/fs-nfsd/description
+- Kernel module for NFS kernel server support
+-endef
+-
+-$(eval $(call KernelPackage,fs-nfsd))
+-
+-
+-define KernelPackage/fs-ntfs
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=NTFS filesystem read-only (old driver) support
+-  KCONFIG:=CONFIG_NTFS_FS
+-  FILES:=$(LINUX_DIR)/fs/ntfs/ntfs.ko
+-  AUTOLOAD:=$(call AutoLoad,30,ntfs)
+-  $(call AddDepends/nls)
+-endef
+-
+-define KernelPackage/fs-ntfs/description
+- Kernel module for limited NTFS filesystem support. Support for writing
+- is extremely limited and disabled as a result.
+-endef
+-
+-$(eval $(call KernelPackage,fs-ntfs))
+-
+-
+ define KernelPackage/fs-ntfs3
+   SUBMENU:=$(FS_MENU)
+   TITLE:=NTFS filesystem read & write (new driver) support
+@@ -597,21 +280,6 @@ endef
+ $(eval $(call KernelPackage,fs-ntfs3))
+ 
+ 
+-define KernelPackage/fs-reiserfs
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=ReiserFS filesystem support
+-  KCONFIG:=CONFIG_REISERFS_FS
+-  FILES:=$(LINUX_DIR)/fs/reiserfs/reiserfs.ko
+-  AUTOLOAD:=$(call AutoLoad,30,reiserfs,1)
+-endef
+-
+-define KernelPackage/fs-reiserfs/description
+- Kernel module for ReiserFS support
+-endef
+-
+-$(eval $(call KernelPackage,fs-reiserfs))
+-
+-
+ define KernelPackage/fs-squashfs
+   SUBMENU:=$(FS_MENU)
+   TITLE:=SquashFS 4.0 filesystem support
+@@ -628,23 +296,6 @@ endef
+ $(eval $(call KernelPackage,fs-squashfs))
+ 
+ 
+-define KernelPackage/fs-udf
+-  SUBMENU:=$(FS_MENU)
+-  TITLE:=UDF filesystem support
+-  KCONFIG:=CONFIG_UDF_FS
+-  FILES:=$(LINUX_DIR)/fs/udf/udf.ko
+-  AUTOLOAD:=$(call AutoLoad,30,udf)
+-  DEPENDS:=+kmod-lib-crc-itu-t +kmod-cdrom
+-  $(call AddDepends/nls)
+-endef
+-
+-define KernelPackage/fs-udf/description
+- Kernel module for UDF filesystem support
+-endef
+-
+-$(eval $(call KernelPackage,fs-udf))
+-
+-
+ define KernelPackage/fs-vfat
+   SUBMENU:=$(FS_MENU)
+   TITLE:=VFAT filesystem support
